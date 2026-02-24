@@ -106,6 +106,53 @@ img { display: block; }
 }
 .btn-nav-cta:hover { opacity: .85; }
 
+/* ─── NAV HAMBURGER & MOBILE MENU ───────────────────────────── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column; justify-content: center; gap: 5px;
+  background: none; border: none; cursor: pointer;
+  padding: 6px; margin-left: auto; flex-shrink: 0;
+}
+.nav-hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--text); border-radius: 2px;
+  transition: all .3s;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+#mobileMenu {
+  display: none;
+  position: fixed; top: 60px; left: 0; right: 0; z-index: 199;
+  background: rgba(11,11,16,.97);
+  backdrop-filter: blur(16px);
+  border-bottom: 2px solid var(--gold);
+  padding: 12px 16px 20px;
+  flex-direction: column; gap: 4px;
+  animation: fadeUp .2s ease;
+}
+#mobileMenu.open { display: flex; }
+.mobile-nav-link {
+  font-size: 15px; font-weight: 500; color: var(--muted);
+  padding: 11px 14px; border-radius: var(--r);
+  border: 1px solid transparent;
+  background: none; text-align: left; transition: all .2s; width: 100%;
+}
+.mobile-nav-link:hover { color: var(--text); background: var(--surf2); }
+.mobile-nav-link.active { color: var(--gold); border-color: rgba(240,192,64,.3); background: var(--gold-dim); }
+.mobile-menu-divider { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+.mobile-menu-actions { display: flex; gap: 8px; margin-top: 4px; }
+.mobile-menu-actions button { flex: 1; padding: 10px; font-size: 13px; }
+
+@media (max-width: 640px) {
+  #navbar { padding: 0 16px; }
+  .nav-links { display: none; }
+  .nav-spacer { display: none; }
+  .nav-actions { display: none; }
+  .nav-hamburger { display: flex; }
+}
+
 /* ─── PAGE CONTAINER ─────────────────────────────────────────── */
 #app { padding-top: 60px; }
 .page { display: none; animation: fadeUp .35s ease; }
@@ -437,7 +484,21 @@ footer .ft-links a:hover { color:var(--text); }
     </button>
     <button class="btn-nav-cta" onclick="nav('checkout')">Checkout</button>
   </div>
+  <button class="nav-hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div id="mobileMenu">
+  <button class="mobile-nav-link" data-page="home"    onclick="navMobile('home')">🏠 Home</button>
+  <button class="mobile-nav-link" data-page="shop"    onclick="navMobile('shop')">📦 Shop</button>
+  <button class="mobile-nav-link" data-page="account" onclick="navMobile('account')">👤 My Account</button>
+  <hr class="mobile-menu-divider">
+  <div class="mobile-menu-actions">
+    <button class="btn btn-outline" onclick="navMobile('cart')">🛒 Cart <span id="cartCountMobile" style="background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px;">0</span></button>
+    <button class="btn btn-primary" onclick="navMobile('checkout')">Checkout</button>
+  </div>
+</div>
 
 <!-- ═══ APP ═════════════════════════════════════════════════════ -->
 <div id="app">
@@ -993,6 +1054,8 @@ function quickAdd(id) {
 /* ═══ CART ════════════════════════════════════════════════════ */
 function updateCartCount() {
   document.getElementById('cartCount').textContent = cart.length;
+  const m = document.getElementById('cartCountMobile');
+  if (m) m.textContent = cart.length;
 }
 
 function renderCart() {
@@ -1137,6 +1200,35 @@ function showToast(msg) {
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 2500);
 }
+
+/* ═══ MOBILE MENU ════════════════════════════════════════════ */
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn = document.getElementById('hamburger');
+  const isOpen = menu.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+}
+
+function navMobile(page) {
+  // close menu first
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  // update mobile active states
+  document.querySelectorAll('#mobileMenu .mobile-nav-link').forEach(l => {
+    l.classList.toggle('active', l.dataset.page === page);
+  });
+  nav(page);
+}
+
+// close mobile menu on outside click
+document.addEventListener('click', e => {
+  const menu = document.getElementById('mobileMenu');
+  const btn = document.getElementById('hamburger');
+  if (menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+    menu.classList.remove('open');
+    btn.classList.remove('open');
+  }
+});
 
 /* ═══ INIT ════════════════════════════════════════════════════ */
 nav('home');
