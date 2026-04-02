@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.debugpy",
+    "ms-python.black-formatter",
+    "ms-python.pylint",
+    "ritwickdey.LiveServer",
+    "esbenp.prettier-vscode",
+    "humao.rest-client",
+    "mtxr.sqltools",
+    "qwtel.sqlite-viewer",
+    "eamodio.gitlens"
+  ]
+}
