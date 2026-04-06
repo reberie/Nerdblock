@@ -1,14 +1,13 @@
 {
   "recommendations": [
-    "ms-python.python",
-    "ms-python.debugpy",
-    "ms-python.black-formatter",
-    "ms-python.pylint",
-    "ritwickdey.LiveServer",
+    "toba.firebase-explorer",
+    "ms-vscode.vscode-typescript-next",
     "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
     "humao.rest-client",
-    "mtxr.sqltools",
-    "qwtel.sqlite-viewer",
-    "eamodio.gitlens"
+    "ritwickdey.LiveServer",
+    "firefox-devtools.vscode-firefox-debug",
+    "eamodio.gitlens",
+    "ms-vscode.vscode-node-azure-pack"
   ]
 }

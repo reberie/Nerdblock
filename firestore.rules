@@ -1,0 +1,120 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+    function hasRole(role) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/system_users/$(request.auth.uid)).data.roles.hasAny([role]);
+    }
+    function isStaff() {
+      return hasRole('Administrator') || hasRole('Customer Support') ||
+             hasRole('Warehouse Staff') || hasRole('Inventory Manager') ||
+             hasRole('Marketing') || hasRole('Leadership');
+    }
+
+    // ── Lookup / reference tables (read-only for all signed-in) ──
+    match /themes/{doc}         { allow read: if isSignedIn(); allow write: if hasRole('Administrator'); }
+    match /content_ratings/{doc}{ allow read: if isSignedIn(); allow write: if hasRole('Administrator'); }
+    match /warehouses/{doc}     { allow read: if isSignedIn(); allow write: if hasRole('Administrator'); }
+    match /countries/{doc}      { allow read: if isSignedIn(); allow write: if hasRole('Administrator'); }
+    match /tax_rates/{doc}      { allow read: if isSignedIn(); allow write: if hasRole('Administrator'); }
+    match /subscription_plans/{doc} {
+      allow read:  if true;           // public — needed for the shop page
+      allow write: if hasRole('Administrator');
+    }
+
+    // ── Products (public read, staff write) ──────────────────
+    match /products/{productId} {
+      allow read:  if true;
+      allow write: if hasRole('Administrator') || hasRole('Inventory Manager');
+    }
+
+    // ── Inventory ────────────────────────────────────────────
+    match /inventory/{docId} {
+      allow read:  if isStaff();
+      allow write: if hasRole('Administrator') || hasRole('Inventory Manager') ||
+                      hasRole('Warehouse Staff');
+    }
+
+    // ── Box releases (public read once visible) ───────────────
+    match /box_releases/{releaseId} {
+      allow read:  if resource.data.is_spoiler_visible == true || isStaff();
+      allow write: if hasRole('Administrator');
+    }
+
+    // ── Customers — owner or staff ───────────────────────────
+    match /customers/{customerId} {
+      allow read:   if isOwner(customerId) || isStaff();
+      allow create: if isSignedIn();
+      allow update: if isOwner(customerId) || hasRole('Administrator') ||
+                       hasRole('Customer Support');
+      allow delete: if hasRole('Administrator');
+
+      match /addresses/{addrId} {
+        allow read, write: if isOwner(customerId) || isStaff();
+      }
+      match /billing_addresses/{addrId} {
+        allow read, write: if isOwner(customerId) || isStaff();
+      }
+    }
+
+    // ── Subscriptions ────────────────────────────────────────
+    match /subscriptions/{subId} {
+      allow read:   if isStaff() ||
+                       (isSignedIn() && resource.data.customer_id == request.auth.uid);
+      allow create: if isSignedIn();
+      allow update: if isStaff() ||
+                       (isSignedIn() && resource.data.customer_id == request.auth.uid);
+      allow delete: if hasRole('Administrator');
+
+      match /events/{eventId} {
+        allow read:  if isStaff() ||
+                        (isSignedIn() && get(/databases/$(database)/documents/subscriptions/$(subId)).data.customer_id == request.auth.uid);
+        allow write: if isStaff();
+      }
+    }
+
+    // ── Orders ───────────────────────────────────────────────
+    match /orders/{orderId} {
+      allow read:  if isStaff() ||
+                      (isSignedIn() && resource.data.customer_id == request.auth.uid);
+      allow create: if isSignedIn();
+      allow update: if isStaff();
+      allow delete: if hasRole('Administrator');
+    }
+
+    // ── Shipments ────────────────────────────────────────────
+    match /shipments/{shipId} {
+      allow read:  if isStaff() ||
+                      (isSignedIn() && resource.data.customer_id == request.auth.uid);
+      allow write: if hasRole('Administrator') || hasRole('Warehouse Staff') ||
+                      hasRole('Customer Support');
+    }
+
+    // ── Payments ─────────────────────────────────────────────
+    match /payment_transactions/{txId} {
+      allow read:  if isStaff() ||
+                      (isSignedIn() && resource.data.customer_id == request.auth.uid);
+      allow write: if hasRole('Administrator');
+    }
+
+    // ── System users / roles (staff only) ────────────────────
+    match /system_users/{userId} {
+      allow read:  if isOwner(userId) || hasRole('Administrator');
+      allow write: if hasRole('Administrator');
+    }
+
+    // ── Audit log (read: leadership/admin, write: server-side only) ──
+    match /audit_logs/{docId} {
+      allow read:  if hasRole('Administrator') || hasRole('Leadership');
+      allow write: if false;  // only Cloud Functions write to this
+    }
+  }
+}

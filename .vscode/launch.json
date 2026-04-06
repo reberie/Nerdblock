@@ -2,17 +2,28 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run NerdBlock API",
-      "type": "debugpy",
+      "name": "Launch Firebase Emulators",
+      "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/app.py",
+      "runtimeExecutable": "firebase",
+      "runtimeArgs": ["emulators:start"],
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
-      "env": {
-        "FLASK_DEBUG": "1",
-        "JWT_SECRET": "nerdblock-dev-secret-change-in-prod",
-        "PORT": "5000"
-      },
-      "justMyCode": true
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Debug Cloud Functions",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Emulators + Debug Functions",
+      "configurations": ["Launch Firebase Emulators", "Debug Cloud Functions"]
     }
   ]
 }
