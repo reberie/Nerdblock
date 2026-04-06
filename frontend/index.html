@@ -106,6 +106,148 @@ img { display: block; }
 }
 .btn-nav-cta:hover { opacity: .85; }
 
+/* ─── LOGIN NAV BUTTON ───────────────────────────────────────── */
+.btn-nav-login {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 16px;
+  border-radius: var(--r);
+  display: flex; align-items: center; gap: 7px;
+  transition: all .2s;
+}
+.btn-nav-login:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+
+/* ─── LOGIN MODAL OVERLAY ────────────────────────────────────── */
+#loginOverlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(7,7,12,.82);
+  backdrop-filter: blur(8px);
+  align-items: center; justify-content: center;
+}
+#loginOverlay.open { display: flex; }
+
+#loginModal {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  width: 100%; max-width: 420px;
+  margin: 0 16px;
+  padding: 36px 32px 32px;
+  position: relative;
+  animation: modalPop .25s cubic-bezier(.34,1.56,.64,1);
+  border-top: 3px solid var(--gold);
+}
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(.93) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: var(--surf2); border: 1px solid var(--border);
+  color: var(--muted); width: 30px; height: 30px;
+  border-radius: 50%; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s; line-height: 1;
+}
+.modal-close:hover { border-color: var(--red); color: var(--red); }
+
+.modal-logo {
+  font-family: var(--font-d);
+  font-size: 26px; letter-spacing: 3px;
+  color: var(--gold);
+  text-align: center; margin-bottom: 4px;
+  text-shadow: 0 0 20px rgba(240,192,64,.3);
+}
+.modal-tagline {
+  font-size: 12px; color: var(--muted);
+  text-align: center; margin-bottom: 28px;
+}
+
+/* tabs */
+.modal-tabs {
+  display: flex; background: var(--surf2);
+  border: 1px solid var(--border); border-radius: var(--r);
+  padding: 4px; gap: 4px; margin-bottom: 24px;
+}
+.modal-tab {
+  flex: 1; padding: 8px; border-radius: calc(var(--r) - 2px);
+  border: none; background: transparent;
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  transition: all .2s;
+}
+.modal-tab.active {
+  background: var(--gold); color: #111; font-weight: 700;
+}
+
+/* form panels */
+.modal-panel { display: none; }
+.modal-panel.active { display: block; }
+
+.modal-field { margin-bottom: 14px; }
+.modal-field label {
+  display: block; font-size: 10px; color: var(--muted);
+  margin-bottom: 5px; text-transform: uppercase; letter-spacing: .8px;
+}
+.modal-field input {
+  width: 100%; background: var(--surf2); border: 1px solid var(--border);
+  color: var(--text); padding: 10px 13px; border-radius: var(--r);
+  font-size: 13px; transition: border-color .2s; outline: none;
+}
+.modal-field input:focus { border-color: var(--gold); }
+.modal-field input::placeholder { color: var(--muted); }
+
+.modal-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+
+.modal-forgot {
+  display: block; text-align: right; font-size: 11px;
+  color: var(--gold); margin-top: -8px; margin-bottom: 18px; cursor: pointer;
+  background: none; border: none; padding: 0;
+}
+.modal-forgot:hover { opacity: .75; }
+
+.modal-submit {
+  width: 100%; padding: 11px; border: none; border-radius: var(--r);
+  background: var(--gold); color: #111; font-weight: 700; font-size: 14px;
+  letter-spacing: .5px; transition: all .2s; margin-bottom: 16px;
+}
+.modal-submit:hover { opacity: .88; transform: translateY(-1px); }
+.modal-submit:active { transform: translateY(0); }
+
+.modal-divider {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; color: var(--muted); margin-bottom: 14px;
+}
+.modal-divider::before, .modal-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* social buttons */
+.modal-socials { display: flex; flex-direction: column; gap: 8px; }
+.modal-social-btn {
+  width: 100%; padding: 9px 14px;
+  background: var(--surf2); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text); font-size: 12px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: all .2s;
+}
+.modal-social-btn:hover { border-color: rgba(240,192,64,.4); background: var(--surf3); }
+.modal-social-icon { font-size: 15px; }
+
+.modal-terms {
+  font-size: 10px; color: var(--muted); text-align: center; line-height: 1.6; margin-top: 14px;
+}
+.modal-terms span { color: var(--gold); cursor: pointer; }
+
+/* strength meter */
+.strength-bar { display: flex; gap: 4px; margin-top: 6px; }
+.strength-seg { height: 3px; flex: 1; border-radius: 3px; background: var(--border); transition: background .3s; }
+.strength-label { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
 /* ─── NAV HAMBURGER & MOBILE MENU ───────────────────────────── */
 .nav-hamburger {
   display: none;
@@ -468,6 +610,88 @@ footer .ft-links a:hover { color:var(--text); }
 </head>
 <body>
 
+<!-- ═══ LOGIN MODAL ══════════════════════════════════════════════ -->
+<div id="loginOverlay" onclick="overlayClick(event)">
+  <div id="loginModal">
+    <button class="modal-close" onclick="closeLogin()">✕</button>
+    <div class="modal-logo">NERDBLOCK</div>
+    <div class="modal-tagline">Your fandom awaits. Sign in to your account.</div>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+      <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <!-- SIGN IN PANEL -->
+    <div class="modal-panel active" id="panel-login">
+      <div class="modal-field">
+        <label>Email Address</label>
+        <input type="email" placeholder="you@email.com" id="li-email">
+      </div>
+      <div class="modal-field">
+        <label>Password</label>
+        <input type="password" placeholder="••••••••" id="li-pass">
+      </div>
+      <button class="modal-forgot" onclick="showToast('📧 Password reset link sent!')">Forgot password?</button>
+      <button class="modal-submit btn" onclick="handleLogin()">Sign In →</button>
+
+      <div class="modal-divider">or continue with</div>
+      <div class="modal-socials">
+        <button class="modal-social-btn" onclick="showToast('🚀 Redirecting to Google...')">
+          <span class="modal-social-icon">🌐</span> Continue with Google
+        </button>
+        <button class="modal-social-btn" onclick="showToast('🚀 Redirecting to Discord...')">
+          <span class="modal-social-icon">🎮</span> Continue with Discord
+        </button>
+      </div>
+    </div>
+
+    <!-- REGISTER PANEL -->
+    <div class="modal-panel" id="panel-register">
+      <div class="modal-field-row">
+        <div class="modal-field" style="margin-bottom:0;">
+          <label>First Name</label>
+          <input type="text" placeholder="Jane" id="reg-first">
+        </div>
+        <div class="modal-field" style="margin-bottom:0;">
+          <label>Last Name</label>
+          <input type="text" placeholder="Doe" id="reg-last">
+        </div>
+      </div>
+      <div class="modal-field" style="margin-top:14px;">
+        <label>Email Address</label>
+        <input type="email" placeholder="you@email.com" id="reg-email">
+      </div>
+      <div class="modal-field">
+        <label>Password</label>
+        <input type="password" placeholder="••••••••" id="reg-pass" oninput="updateStrength(this.value)">
+        <div class="strength-bar">
+          <div class="strength-seg" id="seg1"></div>
+          <div class="strength-seg" id="seg2"></div>
+          <div class="strength-seg" id="seg3"></div>
+          <div class="strength-seg" id="seg4"></div>
+        </div>
+        <div class="strength-label" id="strengthLabel">Enter a password</div>
+      </div>
+      <button class="modal-submit btn" onclick="handleRegister()">Create Account →</button>
+
+      <div class="modal-divider">or sign up with</div>
+      <div class="modal-socials">
+        <button class="modal-social-btn" onclick="showToast('🚀 Redirecting to Google...')">
+          <span class="modal-social-icon">🌐</span> Continue with Google
+        </button>
+        <button class="modal-social-btn" onclick="showToast('🚀 Redirecting to Discord...')">
+          <span class="modal-social-icon">🎮</span> Continue with Discord
+        </button>
+      </div>
+      <div class="modal-terms">
+        By creating an account you agree to NerdBlock's
+        <span>Terms of Service</span> and <span>Privacy Policy</span>.
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ NAVBAR ══════════════════════════════════════════════════ -->
 <nav id="navbar">
   <div class="nav-logo" onclick="nav('home')">NERDBLOCK</div>
@@ -478,6 +702,7 @@ footer .ft-links a:hover { color:var(--text); }
   </div>
   <div class="nav-spacer"></div>
   <div class="nav-actions">
+    <button class="btn-nav-login" id="navLoginBtn" onclick="openLogin()">⚡ Sign In</button>
     <button class="nav-cart-btn" onclick="nav('cart')">
       🛒 Cart
       <span class="cart-count" id="cartCount">0</span>
@@ -495,6 +720,7 @@ footer .ft-links a:hover { color:var(--text); }
   <button class="mobile-nav-link" data-page="account" onclick="navMobile('account')">👤 My Account</button>
   <hr class="mobile-menu-divider">
   <div class="mobile-menu-actions">
+    <button class="btn btn-outline" id="mobileLoginBtn" style="font-size:13px;" onclick="closeMobileAndOpenLogin()">⚡ Sign In</button>
     <button class="btn btn-outline" onclick="navMobile('cart')">🛒 Cart <span id="cartCountMobile" style="background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px;">0</span></button>
     <button class="btn btn-primary" onclick="navMobile('checkout')">Checkout</button>
   </div>
@@ -505,7 +731,6 @@ footer .ft-links a:hover { color:var(--text); }
 
 <!-- ─── PAGE: HOME ────────────────────────────────────────────── -->
 <div class="page" id="page-home">
-  <!-- Hero -->
   <section class="hero">
     <div class="hero-eyebrow">✦ Monthly Mystery Boxes ✦</div>
     <h1>FUEL YOUR<br><span>FANDOM</span></h1>
@@ -522,7 +747,6 @@ footer .ft-links a:hover { color:var(--text); }
     </div>
   </section>
 
-  <!-- Fandoms -->
   <section class="fandom-strip">
     <h2>CHOOSE YOUR FANDOM</h2>
     <div class="fandom-grid">
@@ -537,7 +761,6 @@ footer .ft-links a:hover { color:var(--text); }
     </div>
   </section>
 
-  <!-- Featured Boxes -->
   <section class="featured">
     <div class="section-head">
       <h2>FEATURED BOXES</h2>
@@ -546,7 +769,6 @@ footer .ft-links a:hover { color:var(--text); }
     <div class="boxes-grid" id="homeFeatured"></div>
   </section>
 
-  <!-- How It Works -->
   <section class="how">
     <h2>HOW IT WORKS</h2>
     <div class="steps-grid">
@@ -612,10 +834,8 @@ footer .ft-links a:hover { color:var(--text); }
         <div style="display:flex;gap:8px;margin-bottom:16px;" id="prodBadges"></div>
         <div class="product-price" id="prodPrice"></div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.6;" id="prodDesc"></div>
-
         <div style="font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px;">Choose Your Plan</div>
         <div class="plan-options" id="planOptions"></div>
-
         <div style="display:flex;gap:10px;margin-top:6px;">
           <button class="btn btn-primary btn-md" style="flex:1;" onclick="addToCartFromProduct()">Add to Cart</button>
           <button class="btn btn-outline btn-md">🎁 Gift</button>
@@ -639,7 +859,6 @@ footer .ft-links a:hover { color:var(--text); }
   <div class="checkout-page">
     <h1>CHECKOUT</h1>
     <p class="checkout-sub">Complete your order — you're one step away from the good stuff.</p>
-
     <div class="checkout-progress" id="checkoutProgress">
       <div class="cp-step active" data-s="1"><div class="cp-num">1</div><span>Shipping</span></div>
       <div class="cp-line"></div>
@@ -647,11 +866,8 @@ footer .ft-links a:hover { color:var(--text); }
       <div class="cp-line"></div>
       <div class="cp-step" data-s="3"><div class="cp-num">3</div><span>Payment</span></div>
     </div>
-
     <div class="checkout-layout">
-      <!-- LEFT: form steps -->
       <div>
-        <!-- STEP 1: Shipping -->
         <div class="checkout-step active" id="cStep1">
           <div class="checkout-panel">
             <div class="form-section-title">Contact Information</div>
@@ -698,8 +914,6 @@ footer .ft-links a:hover { color:var(--text); }
             <button class="btn btn-primary btn-md" onclick="checkoutNext(2)">Continue to Review →</button>
           </div>
         </div>
-
-        <!-- STEP 2: Review -->
         <div class="checkout-step" id="cStep2">
           <div class="checkout-panel">
             <div class="form-section-title">Shipping To</div>
@@ -719,8 +933,6 @@ footer .ft-links a:hover { color:var(--text); }
             <button class="btn btn-primary btn-md" onclick="checkoutNext(3)">Continue to Payment →</button>
           </div>
         </div>
-
-        <!-- STEP 3: Payment -->
         <div class="checkout-step" id="cStep3">
           <div class="checkout-panel">
             <div class="form-section-title">Payment Details</div>
@@ -745,8 +957,6 @@ footer .ft-links a:hover { color:var(--text); }
             <button class="btn btn-primary btn-lg" onclick="placeOrder()">Place Order & Subscribe 🚀</button>
           </div>
         </div>
-
-        <!-- SUCCESS -->
         <div class="checkout-step" id="cStepSuccess">
           <div class="success-page">
             <div class="success-icon">🎉</div>
@@ -759,8 +969,6 @@ footer .ft-links a:hover { color:var(--text); }
           </div>
         </div>
       </div>
-
-      <!-- RIGHT: order summary -->
       <div class="order-summary" id="orderSummaryBox">
         <h3>Order Summary</h3>
         <div id="osSummaryItems"></div>
@@ -775,16 +983,13 @@ footer .ft-links a:hover { color:var(--text); }
   <div style="max-width:800px;margin:0 auto;padding:40px 28px 60px;">
     <h1 style="font-family:var(--font-d);font-size:44px;letter-spacing:3px;margin-bottom:6px;">MY ACCOUNT</h1>
     <p style="color:var(--muted);margin-bottom:32px;">Manage your subscriptions, boxes, and profile.</p>
-
     <div style="display:grid;grid-template-columns:180px 1fr;gap:24px;">
-      <!-- sidebar -->
       <div style="display:flex;flex-direction:column;gap:4px;">
         <div id="acct-tab-subs" class="pill active" style="border-radius:8px;padding:10px 14px;text-align:left;display:block;cursor:pointer;" onclick="acctTab('subs')">📦 Subscriptions</div>
         <div id="acct-tab-hist" class="pill" style="border-radius:8px;padding:10px 14px;text-align:left;display:block;cursor:pointer;" onclick="acctTab('hist')">📜 Box History</div>
         <div id="acct-tab-prof" class="pill" style="border-radius:8px;padding:10px 14px;text-align:left;display:block;cursor:pointer;" onclick="acctTab('prof')">👤 Profile</div>
         <div id="acct-tab-addr" class="pill" style="border-radius:8px;padding:10px 14px;text-align:left;display:block;cursor:pointer;" onclick="acctTab('addr')">🏠 Addresses</div>
       </div>
-      <!-- content panels -->
       <div>
         <div id="acct-subs">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
@@ -868,9 +1073,6 @@ footer .ft-links a:hover { color:var(--text); }
 </div><!-- end #app -->
 
 <script>
-/* ════════════════════════════════════════════════════════════════
-   DATA
-════════════════════════════════════════════════════════════════ */
 const BOXES = [
   { id:1,  name:'Classic NerdBox',   fandom:'Comics',  icon:'🦸', price:29.99, sale:null,  desc:'The iconic all-rounder — comic art, collectibles, enamel pins & exclusive apparel celebrating the golden age of comics.', bg:'linear-gradient(135deg,#1a1028,#2e1a50)', edition:'March 2026', stock:'in', exclusive:true },
   { id:2,  name:'Anime Block',       fandom:'Anime',   icon:'🎌', price:27.99, sale:null,  desc:'Straight from Japan — figures, art books, keychains, and apparel from the hottest current and classic series.', bg:'linear-gradient(135deg,#1a1028,#501a2e)', edition:'March 2026', stock:'low', exclusive:false },
@@ -890,7 +1092,6 @@ const PLANS = [
   { id:'onetime',  label:'One-Time Box',          suffix:'', mult:1.15 },
 ];
 
-/* ═══ STATE ════════════════════════════════════════════════════ */
 let currentPage = 'home';
 let cart = [];
 let selectedProductId = null;
@@ -898,8 +1099,110 @@ let selectedPlanId = 'monthly';
 let shopFilter = 'All';
 let shopSort = 'featured';
 let checkoutStep = 1;
+let loggedIn = false;
+let currentUser = null;
 
-/* ═══ NAVIGATION ═══════════════════════════════════════════════ */
+/* ── AUTH UI ── */
+function updateAuthUI() {
+  const acctLink = document.querySelector('.nav-link[data-page="account"]');
+  if (acctLink) acctLink.style.display = loggedIn ? '' : 'none';
+
+  const mobileAcctLink = document.querySelector('#mobileMenu .mobile-nav-link[data-page="account"]');
+  if (mobileAcctLink) mobileAcctLink.style.display = loggedIn ? '' : 'none';
+
+  const loginBtn = document.getElementById('navLoginBtn');
+  if (loginBtn) {
+    if (loggedIn) {
+      loginBtn.textContent = '👤 ' + currentUser + '  ·  Sign Out';
+      loginBtn.onclick = handleSignOut;
+      loginBtn.style.color = 'var(--gold)';
+      loginBtn.style.borderColor = 'rgba(240,192,64,.35)';
+      loginBtn.style.background = 'var(--gold-dim)';
+    } else {
+      loginBtn.textContent = '⚡ Sign In';
+      loginBtn.onclick = openLogin;
+      loginBtn.style.color = '';
+      loginBtn.style.borderColor = '';
+      loginBtn.style.background = '';
+    }
+  }
+
+  const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+  if (mobileLoginBtn) {
+    mobileLoginBtn.textContent = loggedIn ? '👤 Sign Out' : '⚡ Sign In';
+    mobileLoginBtn.onclick = loggedIn ? handleSignOut : closeMobileAndOpenLogin;
+  }
+}
+
+function handleSignOut() {
+  loggedIn = false;
+  currentUser = null;
+  if (currentPage === 'account') nav('home');
+  updateAuthUI();
+  showToast('👋 Signed out. See you next time!');
+}
+
+/* ── LOGIN MODAL ── */
+function openLogin() {
+  document.getElementById('loginOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLogin() {
+  document.getElementById('loginOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function overlayClick(e) {
+  if (e.target === document.getElementById('loginOverlay')) closeLogin();
+}
+function closeMobileAndOpenLogin() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  openLogin();
+}
+function switchTab(tab) {
+  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.modal-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+function updateStrength(val) {
+  const segs = [document.getElementById('seg1'), document.getElementById('seg2'), document.getElementById('seg3'), document.getElementById('seg4')];
+  const label = document.getElementById('strengthLabel');
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const colors = ['#e03a2a','#f0a030','#f0c040','#38c9b0'];
+  const labels = ['Weak','Fair','Good','Strong'];
+  segs.forEach((s, i) => { s.style.background = i < score ? colors[score - 1] : 'var(--border)'; });
+  label.textContent = val.length === 0 ? 'Enter a password' : (score > 0 ? labels[score - 1] : 'Too weak');
+  label.style.color = score > 0 && val.length > 0 ? colors[score - 1] : 'var(--muted)';
+}
+function handleLogin() {
+  const email = document.getElementById('li-email').value.trim();
+  const pass = document.getElementById('li-pass').value;
+  if (!email || !pass) { showToast('⚠️ Please fill in all fields.'); return; }
+  loggedIn = true;
+  currentUser = email.split('@')[0];
+  closeLogin();
+  updateAuthUI();
+  showToast('⚡ Welcome back, ' + currentUser + '!');
+}
+function handleRegister() {
+  const first = document.getElementById('reg-first').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  if (!first || !email || !pass) { showToast('⚠️ Please fill in all fields.'); return; }
+  loggedIn = true;
+  currentUser = first;
+  closeLogin();
+  updateAuthUI();
+  showToast('🎉 Account created! Welcome to NerdBlock, ' + first + '!');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLogin(); });
+
+/* ── NAV ── */
 function nav(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -909,14 +1212,12 @@ function nav(page) {
   if (link) link.classList.add('active');
   currentPage = page;
   window.scrollTo(0, 0);
-
   if (page === 'shop')    renderShop();
   if (page === 'home')    renderHome();
   if (page === 'cart')    renderCart();
   if (page === 'checkout') renderCheckout();
 }
 
-/* ═══ BOX CARD HTML ═══════════════════════════════════════════ */
 function boxCardHTML(b, showAdd = true) {
   const price = b.sale
     ? `<span class="box-price-old">$${b.sale.toFixed(2)}</span>$${b.price.toFixed(2)}`
@@ -926,7 +1227,6 @@ function boxCardHTML(b, showAdd = true) {
     : `<span class="badge badge-green">In Stock</span>`;
   const saleBadge = b.sale ? `<span class="badge badge-red">Sale</span>` : '';
   const exclBadge = b.exclusive ? `<span class="badge badge-blue">Exclusive</span>` : '';
-
   return `
     <div class="box-card" onclick="openProduct(${b.id})">
       <div class="box-img">
@@ -945,13 +1245,11 @@ function boxCardHTML(b, showAdd = true) {
     </div>`;
 }
 
-/* ═══ HOME ════════════════════════════════════════════════════ */
 function renderHome() {
   const featured = BOXES.filter(b => b.exclusive || b.sale).slice(0, 4);
   document.getElementById('homeFeatured').innerHTML = featured.map(b => boxCardHTML(b)).join('');
 }
 
-/* ═══ SHOP ════════════════════════════════════════════════════ */
 function renderShop() {
   let boxes = shopFilter === 'All' ? [...BOXES] : BOXES.filter(b => b.fandom === shopFilter);
   if (shopSort === 'price-asc')  boxes.sort((a,b) => a.price - b.price);
@@ -967,10 +1265,7 @@ function filterShop(el, fandom) {
   renderShop();
 }
 
-function sortShop(val) {
-  shopSort = val;
-  renderShop();
-}
+function sortShop(val) { shopSort = val; renderShop(); }
 
 function shopByFandom(fandom) {
   shopFilter = fandom;
@@ -980,32 +1275,24 @@ function shopByFandom(fandom) {
   });
 }
 
-/* ═══ PRODUCT PAGE ════════════════════════════════════════════ */
 function openProduct(id) {
   const b = BOXES.find(x => x.id === id);
   if (!b) return;
   selectedProductId = id;
   selectedPlanId = 'monthly';
-
   document.getElementById('prodBreadcrumb').textContent = b.name;
   document.getElementById('prodName').textContent = b.name;
   document.getElementById('prodEdition').textContent = `${b.fandom} · ${b.edition}`;
   document.getElementById('prodPrice').textContent = `$${b.price.toFixed(2)}/mo`;
   document.getElementById('prodDesc').textContent = b.desc;
-
-  // visual
   const vis = document.getElementById('prodVisual');
   vis.innerHTML = `<div style="position:absolute;inset:0;background:${b.bg};"></div><div style="position:relative;z-index:1;font-size:80px;">${b.icon}</div>`;
-
-  // badges
   const badges = [];
   if (b.stock === 'low') badges.push(`<span class="badge badge-yellow">Low Stock</span>`);
   else badges.push(`<span class="badge badge-green">In Stock</span>`);
   if (b.sale) badges.push(`<span class="badge badge-red">On Sale</span>`);
   if (b.exclusive) badges.push(`<span class="badge badge-blue">Exclusive</span>`);
   document.getElementById('prodBadges').innerHTML = badges.join('');
-
-  // plans
   document.getElementById('planOptions').innerHTML = PLANS.map(p => {
     const planPrice = (b.price * p.mult).toFixed(2);
     return `<div class="plan-opt ${p.id === 'monthly' ? 'selected' : ''}" onclick="selectPlan(this,'${p.id}')">
@@ -1014,15 +1301,12 @@ function openProduct(id) {
       <span class="plan-price">$${planPrice}${p.suffix}</span>
     </div>`;
   }).join('');
-
-  // meta
   document.getElementById('prodMeta').innerHTML = `<hr class="div">
     <div class="meta-row"><span class="meta-key">Fandom</span><span>${b.fandom}</span></div>
     <div class="meta-row"><span class="meta-key">Ships To</span><span>Canada, USA, UK, EU + 50 countries</span></div>
     <div class="meta-row"><span class="meta-key">Ship Window</span><span>Feb 28 – Mar 5</span></div>
     <div class="meta-row"><span class="meta-key">Items Per Box</span><span>5–8 items</span></div>
     <div class="meta-row"><span class="meta-key">Exclusive Items</span><span>${b.exclusive ? 'Yes' : 'Some'}</span></div>`;
-
   nav('product');
 }
 
@@ -1039,19 +1323,17 @@ function addToCartFromProduct() {
   const price = parseFloat((b.price * p.mult).toFixed(2));
   cart.push({ id: Date.now(), box: b, plan: p, price });
   updateCartCount();
-  // small confirm
   showToast(`${b.icon} ${b.name} added to cart!`);
 }
 
 function quickAdd(id) {
   const b = BOXES.find(x => x.id === id);
-  const p = PLANS[0]; // monthly default
+  const p = PLANS[0];
   cart.push({ id: Date.now(), box: b, plan: p, price: b.price });
   updateCartCount();
   showToast(`${b.icon} ${b.name} added!`);
 }
 
-/* ═══ CART ════════════════════════════════════════════════════ */
 function updateCartCount() {
   document.getElementById('cartCount').textContent = cart.length;
   const m = document.getElementById('cartCountMobile');
@@ -1068,7 +1350,6 @@ function renderCart() {
     </div>`;
     return;
   }
-
   const total = cart.reduce((s, i) => s + i.price, 0);
   const itemsHTML = cart.map(item => `
     <div class="cart-item">
@@ -1080,7 +1361,6 @@ function renderCart() {
       <div class="cart-item-price">$${item.price.toFixed(2)}</div>
       <button class="cart-item-remove" onclick="removeFromCart(${item.id})">×</button>
     </div>`).join('');
-
   el.innerHTML = itemsHTML + `
     <div class="cart-summary">
       <div class="summary-row"><span>Subtotal (${cart.length} item${cart.length>1?'s':''})</span><span>$${total.toFixed(2)}</span></div>
@@ -1097,7 +1377,6 @@ function removeFromCart(id) {
   renderCart();
 }
 
-/* ═══ CHECKOUT ════════════════════════════════════════════════ */
 function renderCheckout() {
   checkoutStep = 1;
   updateCheckoutProgress(1);
@@ -1115,7 +1394,6 @@ function renderOrderSummary() {
       <div class="os-price">$${i.price.toFixed(2)}</div>
     </div>`).join('') :
     `<div style="color:var(--muted);font-size:13px;">No items in cart.</div>`;
-
   document.getElementById('osSummaryItems').innerHTML = items;
   document.getElementById('osSummaryTotals').innerHTML = `
     <hr class="div">
@@ -1132,7 +1410,6 @@ function updateCheckoutProgress(step) {
     if (s < step) el.classList.add('done');
     if (s === step) el.classList.add('active');
   });
-  // update line fills
   const lines = document.querySelectorAll('#checkoutProgress .cp-line');
   lines.forEach((line, i) => {
     line.style.background = (i < step - 1) ? 'var(--teal)' : 'var(--border)';
@@ -1143,9 +1420,7 @@ function checkoutNext(step) {
   document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
   document.getElementById('cStep' + step).classList.add('active');
   updateCheckoutProgress(step);
-
   if (step === 2) {
-    // populate review
     const name = (document.getElementById('f_first').value||'—') + ' ' + (document.getElementById('f_last').value||'—');
     const addr = [
       document.getElementById('f_addr').value||'—',
@@ -1155,7 +1430,6 @@ function checkoutNext(step) {
       document.getElementById('f_country').value
     ].filter(Boolean).join(', ');
     document.getElementById('reviewShipping').innerHTML = `<strong style="color:var(--text);">${name}</strong><br>${document.getElementById('f_email').value||'—'}<br>${addr}`;
-
     const items = cart.length ? cart.map(i =>
       `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
         <span style="font-size:22px;">${i.box.icon}</span>
@@ -1177,7 +1451,6 @@ function placeOrder() {
   document.getElementById('orderSummaryBox').style.display = 'none';
 }
 
-/* ═══ ACCOUNT TABS ════════════════════════════════════════════ */
 function acctTab(tab) {
   ['subs','hist','prof','addr'].forEach(t => {
     document.getElementById('acct-'+t).style.display = t===tab ? 'block' : 'none';
@@ -1185,7 +1458,6 @@ function acctTab(tab) {
   });
 }
 
-/* ═══ TOAST ═══════════════════════════════════════════════════ */
 function showToast(msg) {
   const t = document.createElement('div');
   t.textContent = msg;
@@ -1201,7 +1473,6 @@ function showToast(msg) {
   setTimeout(() => t.remove(), 2500);
 }
 
-/* ═══ MOBILE MENU ════════════════════════════════════════════ */
 function toggleMobileMenu() {
   const menu = document.getElementById('mobileMenu');
   const btn = document.getElementById('hamburger');
@@ -1210,17 +1481,14 @@ function toggleMobileMenu() {
 }
 
 function navMobile(page) {
-  // close menu first
   document.getElementById('mobileMenu').classList.remove('open');
   document.getElementById('hamburger').classList.remove('open');
-  // update mobile active states
   document.querySelectorAll('#mobileMenu .mobile-nav-link').forEach(l => {
     l.classList.toggle('active', l.dataset.page === page);
   });
   nav(page);
 }
 
-// close mobile menu on outside click
 document.addEventListener('click', e => {
   const menu = document.getElementById('mobileMenu');
   const btn = document.getElementById('hamburger');
@@ -1230,8 +1498,8 @@ document.addEventListener('click', e => {
   }
 });
 
-/* ═══ INIT ════════════════════════════════════════════════════ */
 nav('home');
+updateAuthUI();
 </script>
 </body>
 </html>
