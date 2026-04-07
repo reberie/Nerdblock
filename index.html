@@ -1,933 +1,3042 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NerdBlock</title>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-/* ─── RESET & TOKENS ─────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg:       #0b0b10;
-  --surf:     #13131a;
-  --surf2:    #1b1b26;
-  --surf3:    #222230;
-  --border:   #2c2c3e;
-  --gold:     #f0c040;
-  --gold-dim: rgba(240,192,64,.12);
-  --red:      #e03a2a;
-  --teal:     #38c9b0;
-  --blue:     #4a8eff;
-  --text:     #e6e6f0;
-  --muted:    #6b6b8a;
-  --r:        8px;
-  --font-d:   'Bangers', cursive;
-  --font-b:   'Outfit', sans-serif;
-  --font-m:   'JetBrains Mono', monospace;
-}
-html { scroll-behavior: smooth; }
-body { font-family: var(--font-b); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-button { cursor: pointer; font-family: var(--font-b); }
-input, select { font-family: var(--font-b); }
-a { text-decoration: none; color: inherit; }
-img { display: block; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NerdBlock</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ─── RESET & TOKENS ─────────────────────────────────────────── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #0b0b10;
+        --surf: #13131a;
+        --surf2: #1b1b26;
+        --surf3: #222230;
+        --border: #2c2c3e;
+        --gold: #f0c040;
+        --gold-dim: rgba(240, 192, 64, 0.12);
+        --red: #e03a2a;
+        --teal: #38c9b0;
+        --blue: #4a8eff;
+        --text: #e6e6f0;
+        --muted: #6b6b8a;
+        --r: 8px;
+        --font-d: "Bangers", cursive;
+        --font-b: "Outfit", sans-serif;
+        --font-m: "JetBrains Mono", monospace;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--font-b);
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      button {
+        cursor: pointer;
+        font-family: var(--font-b);
+      }
+      input,
+      select {
+        font-family: var(--font-b);
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      img {
+        display: block;
+      }
 
-/* ─── SCROLLBAR ──────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+      /* ─── SCROLLBAR ──────────────────────────────────────────────── */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
 
-/* ─── NAV ────────────────────────────────────────────────────── */
-#navbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  height: 60px;
-  background: rgba(11,11,16,.92);
-  backdrop-filter: blur(16px);
-  border-bottom: 2px solid var(--gold);
-  display: flex; align-items: center;
-  padding: 0 28px; gap: 0;
-}
-.nav-logo {
-  font-family: var(--font-d);
-  font-size: 28px; letter-spacing: 3px;
-  color: var(--gold);
-  cursor: pointer;
-  flex-shrink: 0;
-  text-shadow: 0 0 20px rgba(240,192,64,.4);
-}
-.nav-links {
-  display: flex; gap: 2px; margin-left: 36px;
-}
-.nav-link {
-  font-size: 13px; font-weight: 500;
-  color: var(--muted);
-  padding: 6px 14px;
-  border-radius: var(--r);
-  border: 1px solid transparent;
-  transition: all .2s;
-  background: none;
-}
-.nav-link:hover { color: var(--text); background: var(--surf2); }
-.nav-link.active { color: var(--gold); border-color: rgba(240,192,64,.35); background: var(--gold-dim); }
-.nav-spacer { flex: 1; }
-.nav-actions { display: flex; align-items: center; gap: 10px; }
-.nav-cart-btn {
-  position: relative;
-  background: var(--surf2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 7px 16px;
-  border-radius: var(--r);
-  font-size: 13px;
-  display: flex; align-items: center; gap: 7px;
-  transition: border-color .2s;
-}
-.nav-cart-btn:hover { border-color: var(--gold); }
-.cart-count {
-  background: var(--red);
-  color: #fff;
-  font-size: 10px;
-  font-family: var(--font-m);
-  font-weight: 700;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-}
-.btn-nav-cta {
-  background: var(--gold);
-  color: #111;
-  font-weight: 700;
-  font-size: 13px;
-  padding: 7px 18px;
-  border: none;
-  border-radius: var(--r);
-  transition: opacity .2s;
-}
-.btn-nav-cta:hover { opacity: .85; }
+      /* ─── NAV ────────────────────────────────────────────────────── */
+      #navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        height: 60px;
+        background: rgba(11, 11, 16, 0.92);
+        backdrop-filter: blur(16px);
+        border-bottom: 2px solid var(--gold);
+        display: flex;
+        align-items: center;
+        padding: 0 28px;
+        gap: 0;
+      }
+      .nav-logo {
+        font-family: var(--font-d);
+        font-size: 28px;
+        letter-spacing: 3px;
+        color: var(--gold);
+        cursor: pointer;
+        flex-shrink: 0;
+        text-shadow: 0 0 20px rgba(240, 192, 64, 0.4);
+      }
+      .nav-links {
+        display: flex;
+        gap: 2px;
+        margin-left: 36px;
+      }
+      .nav-link {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        padding: 6px 14px;
+        border-radius: var(--r);
+        border: 1px solid transparent;
+        transition: all 0.2s;
+        background: none;
+      }
+      .nav-link:hover {
+        color: var(--text);
+        background: var(--surf2);
+      }
+      .nav-link.active {
+        color: var(--gold);
+        border-color: rgba(240, 192, 64, 0.35);
+        background: var(--gold-dim);
+      }
+      .nav-spacer {
+        flex: 1;
+      }
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .nav-cart-btn {
+        position: relative;
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 7px 16px;
+        border-radius: var(--r);
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition: border-color 0.2s;
+      }
+      .nav-cart-btn:hover {
+        border-color: var(--gold);
+      }
+      .cart-count {
+        background: var(--red);
+        color: #fff;
+        font-size: 10px;
+        font-family: var(--font-m);
+        font-weight: 700;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn-nav-cta {
+        background: var(--gold);
+        color: #111;
+        font-weight: 700;
+        font-size: 13px;
+        padding: 7px 18px;
+        border: none;
+        border-radius: var(--r);
+        transition: opacity 0.2s;
+      }
+      .btn-nav-cta:hover {
+        opacity: 0.85;
+      }
 
-/* ─── NAV HAMBURGER & MOBILE MENU ───────────────────────────── */
-.nav-hamburger {
-  display: none;
-  flex-direction: column; justify-content: center; gap: 5px;
-  background: none; border: none; cursor: pointer;
-  padding: 6px; margin-left: auto; flex-shrink: 0;
-}
-.nav-hamburger span {
-  display: block; width: 22px; height: 2px;
-  background: var(--text); border-radius: 2px;
-  transition: all .3s;
-}
-.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+      /* ─── LOGIN NAV BUTTON ───────────────────────────────────────── */
+      .btn-nav-login {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 500;
+        padding: 7px 16px;
+        border-radius: var(--r);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition: all 0.2s;
+      }
+      .btn-nav-login:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: var(--gold-dim);
+      }
 
-#mobileMenu {
-  display: none;
-  position: fixed; top: 60px; left: 0; right: 0; z-index: 199;
-  background: rgba(11,11,16,.97);
-  backdrop-filter: blur(16px);
-  border-bottom: 2px solid var(--gold);
-  padding: 12px 16px 20px;
-  flex-direction: column; gap: 4px;
-  animation: fadeUp .2s ease;
-}
-#mobileMenu.open { display: flex; }
-.mobile-nav-link {
-  font-size: 15px; font-weight: 500; color: var(--muted);
-  padding: 11px 14px; border-radius: var(--r);
-  border: 1px solid transparent;
-  background: none; text-align: left; transition: all .2s; width: 100%;
-}
-.mobile-nav-link:hover { color: var(--text); background: var(--surf2); }
-.mobile-nav-link.active { color: var(--gold); border-color: rgba(240,192,64,.3); background: var(--gold-dim); }
-.mobile-menu-divider { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
-.mobile-menu-actions { display: flex; gap: 8px; margin-top: 4px; }
-.mobile-menu-actions button { flex: 1; padding: 10px; font-size: 13px; }
+      /* ─── LOGIN MODAL OVERLAY ────────────────────────────────────── */
+      #loginOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: rgba(7, 7, 12, 0.82);
+        backdrop-filter: blur(8px);
+        align-items: center;
+        justify-content: center;
+      }
+      #loginOverlay.open {
+        display: flex;
+      }
 
-@media (max-width: 640px) {
-  #navbar { padding: 0 16px; }
-  .nav-links { display: none; }
-  .nav-spacer { display: none; }
-  .nav-actions { display: none; }
-  .nav-hamburger { display: flex; }
-}
+      #loginModal {
+        background: var(--surf);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        width: 100%;
+        max-width: 420px;
+        margin: 0 16px;
+        padding: 36px 32px 32px;
+        position: relative;
+        animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border-top: 3px solid var(--gold);
+      }
+      @keyframes modalPop {
+        from {
+          opacity: 0;
+          transform: scale(0.93) translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
 
-/* ─── PAGE CONTAINER ─────────────────────────────────────────── */
-#app { padding-top: 60px; }
-.page { display: none; animation: fadeUp .35s ease; }
-.page.active { display: block; }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+      .modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        line-height: 1;
+      }
+      .modal-close:hover {
+        border-color: var(--red);
+        color: var(--red);
+      }
 
-/* ─── BUTTONS ────────────────────────────────────────────────── */
-.btn { border: none; border-radius: var(--r); font-weight: 600; cursor: pointer; transition: all .2s; }
-.btn-primary { background: var(--gold); color: #111; }
-.btn-primary:hover { opacity: .88; transform: translateY(-1px); }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-.btn-ghost { background: transparent; border: none; color: var(--muted); }
-.btn-ghost:hover { color: var(--text); }
-.btn-danger { background: var(--red); color: #fff; }
-.btn-lg { padding: 13px 28px; font-size: 15px; }
-.btn-md { padding: 9px 20px; font-size: 13px; }
-.btn-sm { padding: 5px 12px; font-size: 12px; }
+      .modal-logo {
+        font-family: var(--font-d);
+        font-size: 26px;
+        letter-spacing: 3px;
+        color: var(--gold);
+        text-align: center;
+        margin-bottom: 4px;
+        text-shadow: 0 0 20px rgba(240, 192, 64, 0.3);
+      }
+      .modal-tagline {
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+        margin-bottom: 28px;
+      }
 
-/* ─── BADGE ──────────────────────────────────────────────────── */
-.badge { display:inline-block; font-size:10px; font-family:var(--font-m); padding:2px 8px; border-radius:20px; font-weight:700; }
-.badge-green { background:rgba(56,201,176,.15); color:var(--teal); border:1px solid rgba(56,201,176,.3); }
-.badge-yellow { background:var(--gold-dim); color:var(--gold); border:1px solid rgba(240,192,64,.3); }
-.badge-red { background:rgba(224,58,42,.15); color:var(--red); border:1px solid rgba(224,58,42,.3); }
-.badge-blue { background:rgba(74,142,255,.15); color:var(--blue); border:1px solid rgba(74,142,255,.3); }
-.badge-muted { background:var(--surf2); color:var(--muted); border:1px solid var(--border); }
+      /* tabs */
+      .modal-tabs {
+        display: flex;
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 4px;
+        gap: 4px;
+        margin-bottom: 24px;
+      }
+      .modal-tab {
+        flex: 1;
+        padding: 8px;
+        border-radius: calc(var(--r) - 2px);
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        transition: all 0.2s;
+      }
+      .modal-tab.active {
+        background: var(--gold);
+        color: #111;
+        font-weight: 700;
+      }
 
-/* ─── INPUTS ─────────────────────────────────────────────────── */
-.field { margin-bottom: 14px; }
-.field label { display:block; font-size:11px; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:.7px; }
-.field input, .field select {
-  width:100%; background:var(--surf2); border:1px solid var(--border);
-  color:var(--text); padding:9px 12px; border-radius:var(--r);
-  font-size:13px; transition:border-color .2s;
-}
-.field input:focus, .field select:focus { outline:none; border-color:var(--gold); }
-.field select option { background:var(--surf2); }
-.field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+      /* form panels */
+      .modal-panel {
+        display: none;
+      }
+      .modal-panel.active {
+        display: block;
+      }
 
-/* ─── CARDS ──────────────────────────────────────────────────── */
-.card { background:var(--surf2); border:1px solid var(--border); border-radius:12px; }
-.kpi-card { padding:18px 20px; }
-.kpi-label { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:6px; }
-.kpi-val { font-size:26px; font-weight:700; font-family:var(--font-m); }
-.kpi-delta { font-size:11px; color:var(--muted); margin-top:4px; }
-.kpi-delta b { color: var(--teal); }
+      .modal-field {
+        margin-bottom: 14px;
+      }
+      .modal-field label {
+        display: block;
+        font-size: 10px;
+        color: var(--muted);
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      .modal-field input {
+        width: 100%;
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 10px 13px;
+        border-radius: var(--r);
+        font-size: 13px;
+        transition: border-color 0.2s;
+        outline: none;
+      }
+      .modal-field input:focus {
+        border-color: var(--gold);
+      }
+      .modal-field input::placeholder {
+        color: var(--muted);
+      }
 
-/* ─── DIVIDER ────────────────────────────────────────────────── */
-hr.div { border:none; border-top:1px solid var(--border); margin:16px 0; }
+      .modal-field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
 
-/* ════════════════════════════════════════════════════════════════
+      .modal-forgot {
+        display: block;
+        text-align: right;
+        font-size: 11px;
+        color: var(--gold);
+        margin-top: -8px;
+        margin-bottom: 18px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+      }
+      .modal-forgot:hover {
+        opacity: 0.75;
+      }
+
+      .modal-submit {
+        width: 100%;
+        padding: 11px;
+        border: none;
+        border-radius: var(--r);
+        background: var(--gold);
+        color: #111;
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        transition: all 0.2s;
+        margin-bottom: 16px;
+      }
+      .modal-submit:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+      }
+      .modal-submit:active {
+        transform: translateY(0);
+      }
+
+      .modal-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+      .modal-divider::before,
+      .modal-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      /* social buttons */
+      .modal-socials {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .modal-social-btn {
+        width: 100%;
+        padding: 9px 14px;
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.2s;
+      }
+      .modal-social-btn:hover {
+        border-color: rgba(240, 192, 64, 0.4);
+        background: var(--surf3);
+      }
+      .modal-social-icon {
+        font-size: 15px;
+      }
+
+      .modal-terms {
+        font-size: 10px;
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.6;
+        margin-top: 14px;
+      }
+      .modal-terms span {
+        color: var(--gold);
+        cursor: pointer;
+      }
+
+      /* strength meter */
+      .strength-bar {
+        display: flex;
+        gap: 4px;
+        margin-top: 6px;
+      }
+      .strength-seg {
+        height: 3px;
+        flex: 1;
+        border-radius: 3px;
+        background: var(--border);
+        transition: background 0.3s;
+      }
+      .strength-label {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* ─── NAV HAMBURGER & MOBILE MENU ───────────────────────────── */
+      .nav-hamburger {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .nav-hamburger span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: var(--text);
+        border-radius: 2px;
+        transition: all 0.3s;
+      }
+      .nav-hamburger.open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+      .nav-hamburger.open span:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+      .nav-hamburger.open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+
+      #mobileMenu {
+        display: none;
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        z-index: 199;
+        background: rgba(11, 11, 16, 0.97);
+        backdrop-filter: blur(16px);
+        border-bottom: 2px solid var(--gold);
+        padding: 12px 16px 20px;
+        flex-direction: column;
+        gap: 4px;
+        animation: fadeUp 0.2s ease;
+      }
+      #mobileMenu.open {
+        display: flex;
+      }
+      .mobile-nav-link {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--muted);
+        padding: 11px 14px;
+        border-radius: var(--r);
+        border: 1px solid transparent;
+        background: none;
+        text-align: left;
+        transition: all 0.2s;
+        width: 100%;
+      }
+      .mobile-nav-link:hover {
+        color: var(--text);
+        background: var(--surf2);
+      }
+      .mobile-nav-link.active {
+        color: var(--gold);
+        border-color: rgba(240, 192, 64, 0.3);
+        background: var(--gold-dim);
+      }
+      .mobile-menu-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 8px 0;
+      }
+      .mobile-menu-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .mobile-menu-actions button {
+        flex: 1;
+        padding: 10px;
+        font-size: 13px;
+      }
+
+      @media (max-width: 640px) {
+        #navbar {
+          padding: 0 16px;
+        }
+        .nav-links {
+          display: none;
+        }
+        .nav-spacer {
+          display: none;
+        }
+        .nav-actions {
+          display: none;
+        }
+        .nav-hamburger {
+          display: flex;
+        }
+      }
+
+      /* ─── PAGE CONTAINER ─────────────────────────────────────────── */
+      #app {
+        padding-top: 60px;
+      }
+      .page {
+        display: none;
+        animation: fadeUp 0.35s ease;
+      }
+      .page.active {
+        display: block;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ─── BUTTONS ────────────────────────────────────────────────── */
+      .btn {
+        border: none;
+        border-radius: var(--r);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: var(--gold);
+        color: #111;
+      }
+      .btn-primary:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text);
+      }
+      .btn-outline:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+      }
+      .btn-ghost {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+      }
+      .btn-ghost:hover {
+        color: var(--text);
+      }
+      .btn-danger {
+        background: var(--red);
+        color: #fff;
+      }
+      .btn-lg {
+        padding: 13px 28px;
+        font-size: 15px;
+      }
+      .btn-md {
+        padding: 9px 20px;
+        font-size: 13px;
+      }
+      .btn-sm {
+        padding: 5px 12px;
+        font-size: 12px;
+      }
+
+      /* ─── BADGE ──────────────────────────────────────────────────── */
+      .badge {
+        display: inline-block;
+        font-size: 10px;
+        font-family: var(--font-m);
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-weight: 700;
+      }
+      .badge-green {
+        background: rgba(56, 201, 176, 0.15);
+        color: var(--teal);
+        border: 1px solid rgba(56, 201, 176, 0.3);
+      }
+      .badge-yellow {
+        background: var(--gold-dim);
+        color: var(--gold);
+        border: 1px solid rgba(240, 192, 64, 0.3);
+      }
+      .badge-red {
+        background: rgba(224, 58, 42, 0.15);
+        color: var(--red);
+        border: 1px solid rgba(224, 58, 42, 0.3);
+      }
+      .badge-blue {
+        background: rgba(74, 142, 255, 0.15);
+        color: var(--blue);
+        border: 1px solid rgba(74, 142, 255, 0.3);
+      }
+      .badge-muted {
+        background: var(--surf2);
+        color: var(--muted);
+        border: 1px solid var(--border);
+      }
+
+      /* ─── INPUTS ─────────────────────────────────────────────────── */
+      .field {
+        margin-bottom: 14px;
+      }
+      .field label {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+      }
+      .field input,
+      .field select {
+        width: 100%;
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 9px 12px;
+        border-radius: var(--r);
+        font-size: 13px;
+        transition: border-color 0.2s;
+      }
+      .field input:focus,
+      .field select:focus {
+        outline: none;
+        border-color: var(--gold);
+      }
+      .field select option {
+        background: var(--surf2);
+      }
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      /* ─── CARDS ──────────────────────────────────────────────────── */
+      .card {
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      .kpi-card {
+        padding: 18px 20px;
+      }
+      .kpi-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .kpi-val {
+        font-size: 26px;
+        font-weight: 700;
+        font-family: var(--font-m);
+      }
+      .kpi-delta {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .kpi-delta b {
+        color: var(--teal);
+      }
+
+      /* ─── DIVIDER ────────────────────────────────────────────────── */
+      hr.div {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 16px 0;
+      }
+
+      /* ════════════════════════════════════════════════════════════════
    PAGE: HOME
 ════════════════════════════════════════════════════════════════ */
-.hero {
-  min-height: 520px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center;
-  padding: 80px 20px 60px;
-  position: relative; overflow: hidden;
-}
-.hero::before {
-  content:'';
-  position:absolute; inset:0;
-  background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(240,192,64,.10) 0%, transparent 70%),
-              radial-gradient(ellipse 50% 40% at 20% 80%, rgba(74,142,255,.07) 0%, transparent 60%),
-              radial-gradient(ellipse 50% 40% at 80% 70%, rgba(56,201,176,.06) 0%, transparent 60%);
-}
-.hero-eyebrow {
-  font-family:var(--font-m); font-size:11px; color:var(--gold);
-  letter-spacing:3px; text-transform:uppercase;
-  background:var(--gold-dim); border:1px solid rgba(240,192,64,.3);
-  padding:4px 14px; border-radius:20px; margin-bottom:22px;
-  position:relative;
-}
-.hero h1 {
-  font-family:var(--font-d);
-  font-size: clamp(52px, 8vw, 96px);
-  letter-spacing:4px; line-height:1;
-  color:var(--text);
-  position:relative;
-}
-.hero h1 span { color:var(--gold); }
-.hero-sub {
-  font-size:16px; color:var(--muted); max-width:520px; margin:18px auto 34px;
-  line-height:1.7; position:relative;
-}
-.hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; position:relative; }
-.hero-stats {
-  display:flex; gap:48px; justify-content:center; margin-top:60px;
-  padding-top:32px; border-top:1px solid var(--border); flex-wrap:wrap;
-}
-.hero-stat-val { font-family:var(--font-d); font-size:42px; color:var(--gold); letter-spacing:2px; }
-.hero-stat-label { font-size:12px; color:var(--muted); margin-top:2px; }
+      .hero {
+        min-height: 520px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 80px 20px 60px;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 80% 60% at 50% 30%,
+            rgba(240, 192, 64, 0.1) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            ellipse 50% 40% at 20% 80%,
+            rgba(74, 142, 255, 0.07) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 50% 40% at 80% 70%,
+            rgba(56, 201, 176, 0.06) 0%,
+            transparent 60%
+          );
+      }
+      .hero-eyebrow {
+        font-family: var(--font-m);
+        font-size: 11px;
+        color: var(--gold);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        background: var(--gold-dim);
+        border: 1px solid rgba(240, 192, 64, 0.3);
+        padding: 4px 14px;
+        border-radius: 20px;
+        margin-bottom: 22px;
+        position: relative;
+      }
+      .hero h1 {
+        font-family: var(--font-d);
+        font-size: clamp(52px, 8vw, 96px);
+        letter-spacing: 4px;
+        line-height: 1;
+        color: var(--text);
+        position: relative;
+      }
+      .hero h1 span {
+        color: var(--gold);
+      }
+      .hero-sub {
+        font-size: 16px;
+        color: var(--muted);
+        max-width: 520px;
+        margin: 18px auto 34px;
+        line-height: 1.7;
+        position: relative;
+      }
+      .hero-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        position: relative;
+      }
+      .hero-stats {
+        display: flex;
+        gap: 48px;
+        justify-content: center;
+        margin-top: 60px;
+        padding-top: 32px;
+        border-top: 1px solid var(--border);
+        flex-wrap: wrap;
+      }
+      .hero-stat-val {
+        font-family: var(--font-d);
+        font-size: 42px;
+        color: var(--gold);
+        letter-spacing: 2px;
+      }
+      .hero-stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
 
-/* fandom strip */
-.fandom-strip {
-  padding:32px 28px;
-  background:var(--surf);
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-}
-.fandom-strip h2 { font-family:var(--font-d); font-size:28px; letter-spacing:2px; margin-bottom:20px; }
-.fandom-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:12px; }
-.fandom-tile {
-  background:var(--surf2); border:1px solid var(--border); border-radius:12px;
-  padding:20px 14px; text-align:center; cursor:pointer;
-  transition:all .25s;
-}
-.fandom-tile:hover { border-color:var(--gold); background:var(--gold-dim); transform:translateY(-3px); }
-.fandom-tile .icon { font-size:32px; margin-bottom:8px; }
-.fandom-tile .name { font-size:12px; font-weight:600; }
+      /* fandom strip */
+      .fandom-strip {
+        padding: 32px 28px;
+        background: var(--surf);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+      .fandom-strip h2 {
+        font-family: var(--font-d);
+        font-size: 28px;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+      }
+      .fandom-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+      }
+      .fandom-tile {
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px 14px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.25s;
+      }
+      .fandom-tile:hover {
+        border-color: var(--gold);
+        background: var(--gold-dim);
+        transform: translateY(-3px);
+      }
+      .fandom-tile .icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+      .fandom-tile .name {
+        font-size: 12px;
+        font-weight: 600;
+      }
 
-/* featured boxes */
-.featured { padding:48px 28px; }
-.section-head { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:28px; }
-.section-head h2 { font-family:var(--font-d); font-size:32px; letter-spacing:2px; }
-.section-head a { font-size:13px; color:var(--gold); cursor:pointer; }
-.boxes-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:18px; }
+      /* featured boxes */
+      .featured {
+        padding: 48px 28px;
+      }
+      .section-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+      .section-head h2 {
+        font-family: var(--font-d);
+        font-size: 32px;
+        letter-spacing: 2px;
+      }
+      .section-head a {
+        font-size: 13px;
+        color: var(--gold);
+        cursor: pointer;
+      }
+      .boxes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 18px;
+      }
 
-.box-card {
-  background:var(--surf); border:1px solid var(--border); border-radius:14px;
-  overflow:hidden; cursor:pointer; transition:all .25s;
-}
-.box-card:hover { border-color:var(--gold); transform:translateY(-4px); box-shadow:0 12px 40px rgba(240,192,64,.08); }
-.box-img {
-  height:150px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:56px; position:relative;
-}
-.box-img-bg { position:absolute; inset:0; }
-.box-img-icon { position:relative; z-index:1; }
-.box-info { padding:16px; }
-.box-name { font-weight:700; font-size:15px; margin-bottom:4px; }
-.box-fandom { font-size:11px; color:var(--muted); margin-bottom:10px; }
-.box-footer { display:flex; align-items:center; justify-content:space-between; }
-.box-price { font-family:var(--font-m); font-size:16px; font-weight:700; color:var(--gold); }
-.box-price-old { font-size:11px; color:var(--muted); text-decoration:line-through; margin-right:4px; }
+      .box-card {
+        background: var(--surf);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.25s;
+      }
+      .box-card:hover {
+        border-color: var(--gold);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(240, 192, 64, 0.08);
+      }
+      .box-img {
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 56px;
+        position: relative;
+      }
+      .box-img-bg {
+        position: absolute;
+        inset: 0;
+      }
+      .box-img-icon {
+        position: relative;
+        z-index: 1;
+      }
+      .box-info {
+        padding: 16px;
+      }
+      .box-name {
+        font-weight: 700;
+        font-size: 15px;
+        margin-bottom: 4px;
+      }
+      .box-fandom {
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      .box-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .box-price {
+        font-family: var(--font-m);
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--gold);
+      }
+      .box-price-old {
+        font-size: 11px;
+        color: var(--muted);
+        text-decoration: line-through;
+        margin-right: 4px;
+      }
 
-/* how it works */
-.how { padding:48px 28px; background:var(--surf); border-top:1px solid var(--border); display:flex; flex-direction:column; align-items:center; }
-.how h2 { font-family:var(--font-d); font-size:32px; letter-spacing:2px; margin-bottom:32px; text-align:center; }
-.how .steps-grid { max-width:960px; width:100%; }
-.steps-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:20px; align-items:center; justify-items:center; }
-.step-card { width:100%; }
-.step-card { background:var(--surf2); border:1px solid var(--border); border-radius:12px; padding:24px 20px; text-align:center; }
-.step-num { font-family:var(--font-d); font-size:40px; color:var(--gold); opacity:.6; margin-bottom:10px; }
-.step-title { font-weight:700; margin-bottom:6px; }
-.step-desc { font-size:12px; color:var(--muted); line-height:1.6; }
+      /* how it works */
+      .how {
+        padding: 48px 28px;
+        background: var(--surf);
+        border-top: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .how h2 {
+        font-family: var(--font-d);
+        font-size: 32px;
+        letter-spacing: 2px;
+        margin-bottom: 32px;
+        text-align: center;
+      }
+      .how .steps-grid {
+        max-width: 960px;
+        width: 100%;
+      }
+      .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        align-items: center;
+        justify-items: center;
+      }
+      .step-card {
+        width: 100%;
+      }
+      .step-card {
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px 20px;
+        text-align: center;
+      }
+      .step-num {
+        font-family: var(--font-d);
+        font-size: 40px;
+        color: var(--gold);
+        opacity: 0.6;
+        margin-bottom: 10px;
+      }
+      .step-title {
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .step-desc {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
 
-/* ════════════════════════════════════════════════════════════════
+      /* ════════════════════════════════════════════════════════════════
    PAGE: SHOP
 ════════════════════════════════════════════════════════════════ */
-.shop-header { padding:40px 28px 20px; }
-.shop-header h1 { font-family:var(--font-d); font-size:44px; letter-spacing:3px; }
-.shop-header p { color:var(--muted); margin-top:6px; }
-.shop-controls {
-  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
-  padding:0 28px 20px;
-}
-.filter-pills { display:flex; gap:6px; flex-wrap:wrap; }
-.pill {
-  padding:5px 14px; border-radius:20px; font-size:12px; font-weight:500;
-  border:1px solid var(--border); color:var(--muted);
-  background:transparent; transition:all .2s; cursor:pointer;
-}
-.pill:hover, .pill.active { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
-.sort-select {
-  margin-left:auto; background:var(--surf2); border:1px solid var(--border);
-  color:var(--text); padding:6px 12px; border-radius:var(--r);
-  font-size:12px; cursor:pointer;
-}
-.shop-grid { padding:0 28px 48px; display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:18px; }
+      .shop-header {
+        padding: 40px 28px 20px;
+      }
+      .shop-header h1 {
+        font-family: var(--font-d);
+        font-size: 44px;
+        letter-spacing: 3px;
+      }
+      .shop-header p {
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .shop-controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 0 28px 20px;
+      }
+      .filter-pills {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .pill {
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        background: transparent;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .pill:hover,
+      .pill.active {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: var(--gold-dim);
+      }
+      .sort-select {
+        margin-left: auto;
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 6px 12px;
+        border-radius: var(--r);
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .shop-grid {
+        padding: 0 28px 48px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 18px;
+      }
 
-/* ════════════════════════════════════════════════════════════════
+      /* ════════════════════════════════════════════════════════════════
    PAGE: PRODUCT DETAIL
 ════════════════════════════════════════════════════════════════ */
-.product-page { padding:40px 28px 60px; max-width:960px; margin:0 auto; }
-.breadcrumb { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); margin-bottom:28px; }
-.breadcrumb .sep { color:var(--border); }
-.breadcrumb .crumb { cursor:pointer; transition:color .2s; }
-.breadcrumb .crumb:hover { color:var(--gold); }
-.product-layout { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; }
-@media(max-width:640px){ .product-layout { grid-template-columns:1fr; } }
-.product-visual {
-  height:340px; border-radius:16px; border:1px solid var(--border);
-  display:flex; align-items:center; justify-content:center;
-  font-size:96px; position:relative; overflow:hidden;
-}
-.product-info h1 { font-family:var(--font-d); font-size:38px; letter-spacing:2px; line-height:1.1; margin-bottom:8px; }
-.product-edition { font-size:12px; color:var(--muted); margin-bottom:16px; }
-.product-price { font-family:var(--font-m); font-size:28px; font-weight:700; color:var(--gold); margin-bottom:20px; }
-.plan-options { display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
-.plan-opt {
-  display:flex; align-items:center; gap:12px;
-  padding:12px 14px; border-radius:var(--r);
-  border:1px solid var(--border); cursor:pointer; transition:all .2s;
-  font-size:13px;
-}
-.plan-opt:hover { border-color:var(--gold); }
-.plan-opt.selected { border-color:var(--gold); background:var(--gold-dim); }
-.plan-opt input[type=radio] { accent-color:var(--gold); }
-.plan-price { margin-left:auto; font-family:var(--font-m); font-size:12px; color:var(--gold); }
-.product-meta { margin-top:20px; }
-.meta-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
-.meta-row:last-child { border-bottom:none; }
-.meta-key { color:var(--muted); }
+      .product-page {
+        padding: 40px 28px 60px;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
+      .breadcrumb .sep {
+        color: var(--border);
+      }
+      .breadcrumb .crumb {
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      .breadcrumb .crumb:hover {
+        color: var(--gold);
+      }
+      .product-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+      }
+      @media (max-width: 640px) {
+        .product-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .product-visual {
+        height: 340px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 96px;
+        position: relative;
+        overflow: hidden;
+      }
+      .product-info h1 {
+        font-family: var(--font-d);
+        font-size: 38px;
+        letter-spacing: 2px;
+        line-height: 1.1;
+        margin-bottom: 8px;
+      }
+      .product-edition {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .product-price {
+        font-family: var(--font-m);
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--gold);
+        margin-bottom: 20px;
+      }
+      .plan-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .plan-opt {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: var(--r);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 13px;
+      }
+      .plan-opt:hover {
+        border-color: var(--gold);
+      }
+      .plan-opt.selected {
+        border-color: var(--gold);
+        background: var(--gold-dim);
+      }
+      .plan-opt input[type="radio"] {
+        accent-color: var(--gold);
+      }
+      .plan-price {
+        margin-left: auto;
+        font-family: var(--font-m);
+        font-size: 12px;
+        color: var(--gold);
+      }
+      .product-meta {
+        margin-top: 20px;
+      }
+      .meta-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+      }
+      .meta-row:last-child {
+        border-bottom: none;
+      }
+      .meta-key {
+        color: var(--muted);
+      }
 
-/* ════════════════════════════════════════════════════════════════
+      /* ════════════════════════════════════════════════════════════════
    PAGE: CART
 ════════════════════════════════════════════════════════════════ */
-.cart-page { max-width:820px; margin:0 auto; padding:40px 28px 60px; }
-.cart-page h1 { font-family:var(--font-d); font-size:40px; letter-spacing:2px; margin-bottom:28px; }
-.cart-empty { text-align:center; padding:80px 20px; }
-.cart-empty .icon { font-size:64px; margin-bottom:16px; opacity:.4; }
-.cart-empty p { color:var(--muted); margin-bottom:24px; }
-.cart-item {
-  display:flex; gap:16px; align-items:center;
-  background:var(--surf); border:1px solid var(--border); border-radius:12px;
-  padding:16px; margin-bottom:12px;
-}
-.cart-item-icon { font-size:36px; flex-shrink:0; }
-.cart-item-info { flex:1; }
-.cart-item-name { font-weight:700; margin-bottom:2px; }
-.cart-item-sub { font-size:12px; color:var(--muted); }
-.cart-item-price { font-family:var(--font-m); font-size:16px; color:var(--gold); font-weight:700; flex-shrink:0; }
-.cart-item-remove { background:none; border:none; color:var(--muted); font-size:18px; flex-shrink:0; transition:color .2s; }
-.cart-item-remove:hover { color:var(--red); }
-.cart-summary { background:var(--surf); border:1px solid var(--border); border-radius:12px; padding:20px; margin-top:8px; }
-.summary-row { display:flex; justify-content:space-between; font-size:13px; padding:5px 0; }
-.summary-total { font-size:17px; font-weight:700; border-top:1px solid var(--border); padding-top:12px; margin-top:8px; }
+      .cart-page {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 40px 28px 60px;
+      }
+      .cart-page h1 {
+        font-family: var(--font-d);
+        font-size: 40px;
+        letter-spacing: 2px;
+        margin-bottom: 28px;
+      }
+      .cart-empty {
+        text-align: center;
+        padding: 80px 20px;
+      }
+      .cart-empty .icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+        opacity: 0.4;
+      }
+      .cart-empty p {
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+      .cart-item {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        background: var(--surf);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      .cart-item-icon {
+        font-size: 36px;
+        flex-shrink: 0;
+      }
+      .cart-item-info {
+        flex: 1;
+      }
+      .cart-item-name {
+        font-weight: 700;
+        margin-bottom: 2px;
+      }
+      .cart-item-sub {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .cart-item-price {
+        font-family: var(--font-m);
+        font-size: 16px;
+        color: var(--gold);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .cart-item-remove {
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 18px;
+        flex-shrink: 0;
+        transition: color 0.2s;
+      }
+      .cart-item-remove:hover {
+        color: var(--red);
+      }
+      .cart-summary {
+        background: var(--surf);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 8px;
+      }
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        padding: 5px 0;
+      }
+      .summary-total {
+        font-size: 17px;
+        font-weight: 700;
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+        margin-top: 8px;
+      }
 
-/* ════════════════════════════════════════════════════════════════
+      /* ════════════════════════════════════════════════════════════════
    PAGE: CHECKOUT
 ════════════════════════════════════════════════════════════════ */
-.checkout-page { max-width:900px; margin:0 auto; padding:40px 28px 60px; }
-.checkout-page h1 { font-family:var(--font-d); font-size:40px; letter-spacing:2px; margin-bottom:8px; }
-.checkout-sub { color:var(--muted); font-size:13px; margin-bottom:32px; }
+      .checkout-page {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 28px 60px;
+      }
+      .checkout-page h1 {
+        font-family: var(--font-d);
+        font-size: 40px;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+      }
+      .checkout-sub {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 32px;
+      }
 
-/* progress bar */
-.checkout-progress { display:flex; align-items:center; margin-bottom:36px; }
-.cp-step { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
-.cp-num {
-  width:28px; height:28px; border-radius:50%;
-  border:1px solid var(--border);
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-m); font-size:11px; flex-shrink:0;
-}
-.cp-step.done .cp-num { background:rgba(56,201,176,.2); color:var(--teal); border-color:var(--teal); }
-.cp-step.active .cp-num { background:var(--gold); color:#111; border-color:var(--gold); font-weight:700; }
-.cp-step.active { color:var(--text); }
-.cp-line { flex:1; height:1px; background:var(--border); margin:0 10px; }
-.cp-step.done + .cp-line { background: var(--teal); }
+      /* progress bar */
+      .checkout-progress {
+        display: flex;
+        align-items: center;
+        margin-bottom: 36px;
+      }
+      .cp-step {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .cp-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-m);
+        font-size: 11px;
+        flex-shrink: 0;
+      }
+      .cp-step.done .cp-num {
+        background: rgba(56, 201, 176, 0.2);
+        color: var(--teal);
+        border-color: var(--teal);
+      }
+      .cp-step.active .cp-num {
+        background: var(--gold);
+        color: #111;
+        border-color: var(--gold);
+        font-weight: 700;
+      }
+      .cp-step.active {
+        color: var(--text);
+      }
+      .cp-line {
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+        margin: 0 10px;
+      }
+      .cp-step.done + .cp-line {
+        background: var(--teal);
+      }
 
-.checkout-layout { display:grid; grid-template-columns:1fr 380px; gap:32px; align-items:start; }
-@media(max-width:720px){ .checkout-layout { grid-template-columns:1fr; } }
+      .checkout-layout {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 32px;
+        align-items: start;
+      }
+      @media (max-width: 720px) {
+        .checkout-layout {
+          grid-template-columns: 1fr;
+        }
+      }
 
-.checkout-form { }
-.form-section-title { font-weight:700; font-size:14px; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid var(--border); }
-.checkout-panel { background:var(--surf); border:1px solid var(--border); border-radius:14px; padding:22px; }
-.checkout-panel + .checkout-panel { margin-top:16px; }
+      .form-section-title {
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+      }
+      .checkout-panel {
+        background: var(--surf);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px;
+      }
+      .checkout-panel + .checkout-panel {
+        margin-top: 16px;
+      }
 
-/* order summary sidebar */
-.order-summary { background:var(--surf); border:1px solid var(--border); border-radius:14px; padding:22px; position:sticky; top:80px; }
-.order-summary h3 { font-family:var(--font-d); font-size:22px; letter-spacing:1px; margin-bottom:18px; }
-.os-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
-.os-icon { font-size:26px; }
-.os-name { font-size:13px; font-weight:600; }
-.os-plan { font-size:11px; color:var(--muted); }
-.os-price { margin-left:auto; font-family:var(--font-m); font-size:13px; color:var(--gold); }
-.os-row { display:flex; justify-content:space-between; font-size:13px; padding:5px 0; }
-.os-total { font-size:16px; font-weight:700; border-top:2px solid var(--border); padding-top:12px; margin-top:6px; }
+      /* order summary sidebar */
+      .order-summary {
+        background: var(--surf);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px;
+        position: sticky;
+        top: 80px;
+      }
+      .order-summary h3 {
+        font-family: var(--font-d);
+        font-size: 22px;
+        letter-spacing: 1px;
+        margin-bottom: 18px;
+      }
+      .os-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .os-icon {
+        font-size: 26px;
+      }
+      .os-name {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .os-plan {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .os-price {
+        margin-left: auto;
+        font-family: var(--font-m);
+        font-size: 13px;
+        color: var(--gold);
+      }
+      .os-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        padding: 5px 0;
+      }
+      .os-total {
+        font-size: 16px;
+        font-weight: 700;
+        border-top: 2px solid var(--border);
+        padding-top: 12px;
+        margin-top: 6px;
+      }
 
-/* step panels */
-.checkout-step { display:none; }
-.checkout-step.active { display:block; }
+      /* step panels */
+      .checkout-step {
+        display: none;
+      }
+      .checkout-step.active {
+        display: block;
+      }
 
-/* success */
-.success-page { text-align:center; padding:80px 20px; }
-.success-icon { font-size:80px; margin-bottom:20px; animation:pop .5s ease; }
-@keyframes pop { 0%{transform:scale(.5);opacity:0} 80%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
-.success-page h2 { font-family:var(--font-d); font-size:48px; letter-spacing:3px; color:var(--teal); margin-bottom:12px; }
-.success-page p { color:var(--muted); font-size:14px; max-width:400px; margin:0 auto 28px; line-height:1.7; }
+      /* success */
+      .success-page {
+        text-align: center;
+        padding: 80px 20px;
+      }
+      .success-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        animation: pop 0.5s ease;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.5);
+          opacity: 0;
+        }
+        80% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .success-page h2 {
+        font-family: var(--font-d);
+        font-size: 48px;
+        letter-spacing: 3px;
+        color: var(--teal);
+        margin-bottom: 12px;
+      }
+      .success-page p {
+        color: var(--muted);
+        font-size: 14px;
+        max-width: 400px;
+        margin: 0 auto 28px;
+        line-height: 1.7;
+      }
 
-/* payment card visuals */
-.card-brands { display:flex; gap:8px; margin-bottom:12px; }
-.card-brand { background:var(--surf2); border:1px solid var(--border); border-radius:6px; padding:4px 10px; font-size:11px; color:var(--muted); }
+      /* payment card visuals */
+      .card-brands {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .card-brand {
+        background: var(--surf2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 11px;
+        color: var(--muted);
+      }
 
-/* radio plan in checkout */
-.plan-sel { display:flex; flex-direction:column; gap:6px; }
-.plan-sel-opt {
-  display:flex; align-items:center; gap:10px; padding:10px 12px;
-  border:1px solid var(--border); border-radius:var(--r); cursor:pointer; transition:all .2s;
-}
-.plan-sel-opt:hover { border-color:var(--gold); }
-.plan-sel-opt.sel { border-color:var(--gold); background:var(--gold-dim); }
-.plan-sel-opt input { accent-color:var(--gold); }
-.plan-sel-label { font-size:13px; flex:1; }
-.plan-sel-price { font-family:var(--font-m); font-size:12px; color:var(--gold); }
+      /* radio plan in checkout */
+      .plan-sel {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .plan-sel-opt {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .plan-sel-opt:hover {
+        border-color: var(--gold);
+      }
+      .plan-sel-opt.sel {
+        border-color: var(--gold);
+        background: var(--gold-dim);
+      }
+      .plan-sel-opt input {
+        accent-color: var(--gold);
+      }
+      .plan-sel-label {
+        font-size: 13px;
+        flex: 1;
+      }
+      .plan-sel-price {
+        font-family: var(--font-m);
+        font-size: 12px;
+        color: var(--gold);
+      }
 
-/* ─── FOOTER ─────────────────────────────────────────────────── */
-footer {
-  background:var(--surf); border-top:1px solid var(--border);
-  padding:32px 28px; text-align:center; color:var(--muted); font-size:12px;
-}
-footer .ft-logo { font-family:var(--font-d); font-size:24px; color:var(--gold); letter-spacing:3px; margin-bottom:8px; }
-footer .ft-links { display:flex; gap:20px; justify-content:center; margin-bottom:12px; }
-footer .ft-links a { color:var(--muted); transition:color .2s; cursor:pointer; }
-footer .ft-links a:hover { color:var(--text); }
-</style>
-</head>
-<body>
-
-<!-- ═══ NAVBAR ══════════════════════════════════════════════════ -->
-<nav id="navbar">
-  <div class="nav-logo" onclick="nav('home')">NERDBLOCK</div>
-  <div class="nav-links">
-    <button class="nav-link" data-page="home"    onclick="nav('home')">Home</button>
-    <button class="nav-link" data-page="shop"    onclick="nav('shop')">Shop</button>
-    <button class="nav-link" data-page="account" onclick="nav('account')">My Account</button>
-  </div>
-  <div class="nav-spacer"></div>
-  <div class="nav-actions">
-    <button class="nav-cart-btn" onclick="nav('cart')">
-      🛒 Cart
-      <span class="cart-count" id="cartCount">0</span>
-    </button>
-    <button class="btn-nav-cta" onclick="nav('checkout')">Checkout</button>
-  </div>
-  <button class="nav-hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Toggle menu">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-
-<div id="mobileMenu">
-  <button class="mobile-nav-link" data-page="home"    onclick="navMobile('home')">🏠 Home</button>
-  <button class="mobile-nav-link" data-page="shop"    onclick="navMobile('shop')">📦 Shop</button>
-  <button class="mobile-nav-link" data-page="account" onclick="navMobile('account')">👤 My Account</button>
-  <hr class="mobile-menu-divider">
-  <div class="mobile-menu-actions">
-    <button class="btn btn-outline" onclick="navMobile('cart')">🛒 Cart <span id="cartCountMobile" style="background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px;">0</span></button>
-    <button class="btn btn-primary" onclick="navMobile('checkout')">Checkout</button>
-  </div>
-</div>
-
-<!-- ═══ APP ═════════════════════════════════════════════════════ -->
-<div id="app">
-
-<!-- ─── PAGE: HOME ────────────────────────────────────────────── -->
-<div class="page" id="page-home">
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-eyebrow">✦ Monthly Mystery Boxes ✦</div>
-    <h1>FUEL YOUR<br><span>FANDOM</span></h1>
-    <p class="hero-sub">Curated collectibles, apparel & exclusive gear — delivered to your door every month. Surprise included.</p>
-    <div class="hero-btns">
-      <button class="btn btn-primary btn-lg" onclick="nav('shop')">Browse Boxes</button>
-      <button class="btn btn-outline btn-lg" onclick="scrollTo(0,600)">How It Works ↓</button>
-    </div>
-    <div class="hero-stats">
-      <div><div class="hero-stat-val">24K+</div><div class="hero-stat-label">Active Subscribers</div></div>
-      <div><div class="hero-stat-val">8</div><div class="hero-stat-label">Fandom Themes</div></div>
-      <div><div class="hero-stat-val">50+</div><div class="hero-stat-label">Countries Shipped</div></div>
-      <div><div class="hero-stat-val">98%</div><div class="hero-stat-label">Satisfaction Rate</div></div>
-    </div>
-  </section>
-
-  <!-- Fandoms -->
-  <section class="fandom-strip">
-    <h2>CHOOSE YOUR FANDOM</h2>
-    <div class="fandom-grid">
-      <div class="fandom-tile" onclick="shopByFandom('Comics')"><div class="icon">🦸</div><div class="name">Comics</div></div>
-      <div class="fandom-tile" onclick="shopByFandom('Anime')"><div class="icon">🎌</div><div class="name">Anime</div></div>
-      <div class="fandom-tile" onclick="shopByFandom('Sci-Fi')"><div class="icon">🚀</div><div class="name">Sci-Fi</div></div>
-      <div class="fandom-tile" onclick="shopByFandom('Gaming')"><div class="icon">👾</div><div class="name">Gaming</div></div>
-      <div class="fandom-tile" onclick="shopByFandom('Horror')"><div class="icon">🎃</div><div class="name">Horror</div></div>
-      <div class="fandom-tile" onclick="shopByFandom('Arcade')"><div class="icon">🕹️</div><div class="name">Arcade</div></div>
-      <div class="fandom-tile" onclick="shopByFandom('Classic')"><div class="icon">🤓</div><div class="name">Classic Nerd</div></div>
-      <div class="fandom-tile" onclick="shopByFandom('Fantasy')"><div class="icon">⚔️</div><div class="name">Fantasy</div></div>
-    </div>
-  </section>
-
-  <!-- Featured Boxes -->
-  <section class="featured">
-    <div class="section-head">
-      <h2>FEATURED BOXES</h2>
-      <span onclick="nav('shop')">View all →</span>
-    </div>
-    <div class="boxes-grid" id="homeFeatured"></div>
-  </section>
-
-  <!-- How It Works -->
-  <section class="how">
-    <h2>HOW IT WORKS</h2>
-    <div class="steps-grid">
-      <div class="step-card"><div class="step-num">01</div><div class="step-title">Pick Your Fandom</div><div class="step-desc">Browse 8 unique themes and choose the universe that speaks to you.</div></div>
-      <div class="step-card"><div class="step-num">02</div><div class="step-title">Subscribe or Buy Once</div><div class="step-desc">Commit monthly or grab a single box — no pressure either way.</div></div>
-      <div class="step-card"><div class="step-num">03</div><div class="step-title">We Curate the Magic</div><div class="step-desc">Our team hunts down exclusive collectibles you won't find anywhere else.</div></div>
-      <div class="step-card"><div class="step-num">04</div><div class="step-title">Unbox & Be Amazed</div><div class="step-desc">Your box arrives packed with 5–8 items. The surprise is the whole point.</div></div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="ft-logo">NERDBLOCK</div>
-    <div class="ft-links">
-      <a>About</a><a>FAQ</a><a>Privacy Policy</a><a>Terms</a><a>Contact</a>
-    </div>
-    <div>© 2026 NerdBlock Inc. — Canada's Most Widely Distributed Monthly Subscription Box.</div>
-  </footer>
-</div>
-
-<!-- ─── PAGE: SHOP ────────────────────────────────────────────── -->
-<div class="page" id="page-shop">
-  <div class="shop-header">
-    <h1>SHOP ALL BOXES</h1>
-    <p>Discover mystery boxes for every fandom. Subscribe or buy a single box.</p>
-  </div>
-  <div class="shop-controls">
-    <div class="filter-pills" id="shopPills">
-      <button class="pill active" data-f="All" onclick="filterShop(this,'All')">All</button>
-      <button class="pill" data-f="Comics" onclick="filterShop(this,'Comics')">🦸 Comics</button>
-      <button class="pill" data-f="Anime" onclick="filterShop(this,'Anime')">🎌 Anime</button>
-      <button class="pill" data-f="Sci-Fi" onclick="filterShop(this,'Sci-Fi')">🚀 Sci-Fi</button>
-      <button class="pill" data-f="Gaming" onclick="filterShop(this,'Gaming')">👾 Gaming</button>
-      <button class="pill" data-f="Horror" onclick="filterShop(this,'Horror')">🎃 Horror</button>
-      <button class="pill" data-f="Arcade" onclick="filterShop(this,'Arcade')">🕹️ Arcade</button>
-      <button class="pill" data-f="Classic" onclick="filterShop(this,'Classic')">🤓 Classic</button>
-      <button class="pill" data-f="Fantasy" onclick="filterShop(this,'Fantasy')">⚔️ Fantasy</button>
-    </div>
-    <select class="sort-select" onchange="sortShop(this.value)">
-      <option value="featured">Sort: Featured</option>
-      <option value="price-asc">Price: Low → High</option>
-      <option value="price-desc">Price: High → Low</option>
-      <option value="sale">On Sale First</option>
-    </select>
-  </div>
-  <div class="shop-grid" id="shopGrid"></div>
-</div>
-
-<!-- ─── PAGE: PRODUCT ─────────────────────────────────────────── -->
-<div class="page" id="page-product">
-  <div class="product-page">
-    <div class="breadcrumb">
-      <span class="crumb" onclick="nav('home')">Home</span><span class="sep">›</span>
-      <span class="crumb" onclick="nav('shop')">Shop</span><span class="sep">›</span>
-      <span id="prodBreadcrumb" class="crumb" style="color:var(--text);">Box</span>
-    </div>
-    <div class="product-layout">
-      <div>
-        <div class="product-visual" id="prodVisual"></div>
-      </div>
-      <div class="product-info">
-        <h1 id="prodName"></h1>
-        <div class="product-edition" id="prodEdition"></div>
-        <div style="display:flex;gap:8px;margin-bottom:16px;" id="prodBadges"></div>
-        <div class="product-price" id="prodPrice"></div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.6;" id="prodDesc"></div>
-
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px;">Choose Your Plan</div>
-        <div class="plan-options" id="planOptions"></div>
-
-        <div style="display:flex;gap:10px;margin-top:6px;">
-          <button class="btn btn-primary btn-md" style="flex:1;" onclick="addToCartFromProduct()">Add to Cart</button>
-          <button class="btn btn-outline btn-md">🎁 Gift</button>
+      /* ─── FOOTER ─────────────────────────────────────────────────── */
+      footer {
+        background: var(--surf);
+        border-top: 1px solid var(--border);
+        padding: 32px 28px;
+        text-align: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      footer .ft-logo {
+        font-family: var(--font-d);
+        font-size: 24px;
+        color: var(--gold);
+        letter-spacing: 3px;
+        margin-bottom: 8px;
+      }
+      footer .ft-links {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 12px;
+      }
+      footer .ft-links a {
+        color: var(--muted);
+        transition: color 0.2s;
+        cursor: pointer;
+      }
+      footer .ft-links a:hover {
+        color: var(--text);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ═══ LOGIN MODAL ══════════════════════════════════════════════ -->
+    <div id="loginOverlay" onclick="overlayClick(event)">
+      <div id="loginModal">
+        <button class="modal-close" onclick="closeLogin()">✕</button>
+        <div class="modal-logo">NERDBLOCK</div>
+        <div class="modal-tagline">
+          Your fandom awaits. Sign in to your account.
         </div>
-        <div class="product-meta" id="prodMeta"></div>
+
+        <div class="modal-tabs">
+          <button
+            class="modal-tab active"
+            id="tab-login"
+            onclick="switchTab('login')"
+          >
+            Sign In
+          </button>
+          <button
+            class="modal-tab"
+            id="tab-register"
+            onclick="switchTab('register')"
+          >
+            Create Account
+          </button>
+        </div>
+
+        <!-- SIGN IN PANEL -->
+        <div class="modal-panel active" id="panel-login">
+          <div class="modal-field">
+            <label>Email Address</label>
+            <input type="email" placeholder="you@email.com" id="li-email" />
+          </div>
+          <div class="modal-field">
+            <label>Password</label>
+            <input type="password" placeholder="••••••••" id="li-pass" />
+          </div>
+          <button
+            class="modal-forgot"
+            onclick="showToast('📧 Password reset link sent!')"
+          >
+            Forgot password?
+          </button>
+          <button class="modal-submit btn" onclick="handleLogin()">
+            Sign In →
+          </button>
+
+          <div class="modal-divider">or continue with</div>
+          <div class="modal-socials">
+            <button
+              class="modal-social-btn"
+              onclick="showToast('🚀 Redirecting to Google...')"
+            >
+              <span class="modal-social-icon">🌐</span> Continue with Google
+            </button>
+            <button
+              class="modal-social-btn"
+              onclick="showToast('🚀 Redirecting to Discord...')"
+            >
+              <span class="modal-social-icon">🎮</span> Continue with Discord
+            </button>
+          </div>
+        </div>
+
+        <!-- REGISTER PANEL -->
+        <div class="modal-panel" id="panel-register">
+          <div class="modal-field-row">
+            <div class="modal-field" style="margin-bottom: 0">
+              <label>First Name</label>
+              <input type="text" placeholder="Jane" id="reg-first" />
+            </div>
+            <div class="modal-field" style="margin-bottom: 0">
+              <label>Last Name</label>
+              <input type="text" placeholder="Doe" id="reg-last" />
+            </div>
+          </div>
+          <div class="modal-field" style="margin-top: 14px">
+            <label>Email Address</label>
+            <input type="email" placeholder="you@email.com" id="reg-email" />
+          </div>
+          <div class="modal-field">
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              id="reg-pass"
+              oninput="updateStrength(this.value)"
+            />
+            <div class="strength-bar">
+              <div class="strength-seg" id="seg1"></div>
+              <div class="strength-seg" id="seg2"></div>
+              <div class="strength-seg" id="seg3"></div>
+              <div class="strength-seg" id="seg4"></div>
+            </div>
+            <div class="strength-label" id="strengthLabel">
+              Enter a password
+            </div>
+          </div>
+          <button class="modal-submit btn" onclick="handleRegister()">
+            Create Account →
+          </button>
+
+          <div class="modal-divider">or sign up with</div>
+          <div class="modal-socials">
+            <button
+              class="modal-social-btn"
+              onclick="showToast('🚀 Redirecting to Google...')"
+            >
+              <span class="modal-social-icon">🌐</span> Continue with Google
+            </button>
+            <button
+              class="modal-social-btn"
+              onclick="showToast('🚀 Redirecting to Discord...')"
+            >
+              <span class="modal-social-icon">🎮</span> Continue with Discord
+            </button>
+          </div>
+          <div class="modal-terms">
+            By creating an account you agree to NerdBlock's
+            <span>Terms of Service</span> and <span>Privacy Policy</span>.
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- ─── PAGE: CART ────────────────────────────────────────────── -->
-<div class="page" id="page-cart">
-  <div class="cart-page">
-    <h1>YOUR CART</h1>
-    <div id="cartContent"></div>
-  </div>
-</div>
+    <!-- ═══ NAVBAR ══════════════════════════════════════════════════ -->
+    <nav id="navbar">
+      <div class="nav-logo" onclick="nav('home')">NERDBLOCK</div>
+      <div class="nav-links">
+        <button class="nav-link" data-page="home" onclick="nav('home')">
+          Home
+        </button>
+        <button class="nav-link" data-page="shop" onclick="nav('shop')">
+          Shop
+        </button>
+        <button class="nav-link" data-page="account" onclick="nav('account')">
+          My Account
+        </button>
+      </div>
+      <div class="nav-spacer"></div>
+      <div class="nav-actions">
+        <button class="btn-nav-login" id="navLoginBtn" onclick="openLogin()">
+          ⚡ Sign In
+        </button>
+        <button class="nav-cart-btn" onclick="nav('cart')">
+          🛒 Cart
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="btn-nav-cta" onclick="nav('checkout')">Checkout</button>
+      </div>
+      <button
+        class="nav-hamburger"
+        id="hamburger"
+        onclick="toggleMobileMenu()"
+        aria-label="Toggle menu"
+      >
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
 
-<!-- ─── PAGE: CHECKOUT ───────────────────────────────────────── -->
-<div class="page" id="page-checkout">
-  <div class="checkout-page">
-    <h1>CHECKOUT</h1>
-    <p class="checkout-sub">Complete your order — you're one step away from the good stuff.</p>
-
-    <div class="checkout-progress" id="checkoutProgress">
-      <div class="cp-step active" data-s="1"><div class="cp-num">1</div><span>Shipping</span></div>
-      <div class="cp-line"></div>
-      <div class="cp-step" data-s="2"><div class="cp-num">2</div><span>Review</span></div>
-      <div class="cp-line"></div>
-      <div class="cp-step" data-s="3"><div class="cp-num">3</div><span>Payment</span></div>
+    <div id="mobileMenu">
+      <button
+        class="mobile-nav-link"
+        data-page="home"
+        onclick="navMobile('home')"
+      >
+        🏠 Home
+      </button>
+      <button
+        class="mobile-nav-link"
+        data-page="shop"
+        onclick="navMobile('shop')"
+      >
+        📦 Shop
+      </button>
+      <button
+        class="mobile-nav-link"
+        data-page="account"
+        onclick="navMobile('account')"
+      >
+        👤 My Account
+      </button>
+      <hr class="mobile-menu-divider" />
+      <div class="mobile-menu-actions">
+        <button
+          class="btn btn-outline"
+          id="mobileLoginBtn"
+          style="font-size: 13px"
+          onclick="closeMobileAndOpenLogin()"
+        >
+          ⚡ Sign In
+        </button>
+        <button class="btn btn-outline" onclick="navMobile('cart')">
+          🛒 Cart
+          <span
+            id="cartCountMobile"
+            style="
+              background: var(--red);
+              color: #fff;
+              font-size: 10px;
+              padding: 1px 6px;
+              border-radius: 10px;
+              margin-left: 4px;
+            "
+            >0</span
+          >
+        </button>
+        <button class="btn btn-primary" onclick="navMobile('checkout')">
+          Checkout
+        </button>
+      </div>
     </div>
 
-    <div class="checkout-layout">
-      <!-- LEFT: form steps -->
-      <div>
-        <!-- STEP 1: Shipping -->
-        <div class="checkout-step active" id="cStep1">
-          <div class="checkout-panel">
-            <div class="form-section-title">Contact Information</div>
-            <div class="field-row">
-              <div class="field"><label>First Name</label><input id="f_first" placeholder="Jane"></div>
-              <div class="field"><label>Last Name</label><input id="f_last" placeholder="Doe"></div>
-            </div>
-            <div class="field"><label>Email Address</label><input id="f_email" placeholder="jane@email.com" type="email"></div>
-            <div class="field"><label>Phone (optional)</label><input id="f_phone" placeholder="+1 416 555 0100" type="tel"></div>
+    <!-- ═══ APP ═════════════════════════════════════════════════════ -->
+    <div id="app">
+      <!-- ─── PAGE: HOME ────────────────────────────────────────────── -->
+      <div class="page" id="page-home">
+        <section class="hero">
+          <div class="hero-eyebrow">✦ Monthly Mystery Boxes ✦</div>
+          <h1>FUEL YOUR<br /><span>FANDOM</span></h1>
+          <p class="hero-sub">
+            Curated collectibles, apparel & exclusive gear — delivered to your
+            door every month. Surprise included.
+          </p>
+          <div class="hero-btns">
+            <button class="btn btn-primary btn-lg" onclick="nav('shop')">
+              Browse Boxes
+            </button>
+            <button class="btn btn-outline btn-lg" onclick="scrollTo(0, 600)">
+              How It Works ↓
+            </button>
           </div>
-          <div class="checkout-panel">
-            <div class="form-section-title">Shipping Address</div>
-            <div class="field"><label>Street Address</label><input id="f_addr" placeholder="123 Maple St"></div>
-            <div class="field-row">
-              <div class="field"><label>City</label><input id="f_city" placeholder="Toronto"></div>
-              <div class="field"><label>Province / State</label><input id="f_prov" placeholder="ON"></div>
+          <div class="hero-stats">
+            <div>
+              <div class="hero-stat-val">24K+</div>
+              <div class="hero-stat-label">Active Subscribers</div>
             </div>
-            <div class="field-row">
-              <div class="field"><label>Postal / ZIP Code</label><input id="f_zip" placeholder="M4B 1T7"></div>
-              <div class="field"><label>Country</label>
-                <select id="f_country">
-                  <option>Canada</option><option>United States</option><option>United Kingdom</option>
-                  <option>Australia</option><option>Germany</option><option>France</option><option>Japan</option><option>Other</option>
-                </select>
+            <div>
+              <div class="hero-stat-val">8</div>
+              <div class="hero-stat-label">Fandom Themes</div>
+            </div>
+            <div>
+              <div class="hero-stat-val">50+</div>
+              <div class="hero-stat-label">Countries Shipped</div>
+            </div>
+            <div>
+              <div class="hero-stat-val">98%</div>
+              <div class="hero-stat-label">Satisfaction Rate</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="fandom-strip">
+          <h2>CHOOSE YOUR FANDOM</h2>
+          <div class="fandom-grid">
+            <div class="fandom-tile" onclick="shopByFandom('Comics')">
+              <div class="icon">🦸</div>
+              <div class="name">Comics</div>
+            </div>
+            <div class="fandom-tile" onclick="shopByFandom('Anime')">
+              <div class="icon">🎌</div>
+              <div class="name">Anime</div>
+            </div>
+            <div class="fandom-tile" onclick="shopByFandom('Sci-Fi')">
+              <div class="icon">🚀</div>
+              <div class="name">Sci-Fi</div>
+            </div>
+            <div class="fandom-tile" onclick="shopByFandom('Gaming')">
+              <div class="icon">👾</div>
+              <div class="name">Gaming</div>
+            </div>
+            <div class="fandom-tile" onclick="shopByFandom('Horror')">
+              <div class="icon">🎃</div>
+              <div class="name">Horror</div>
+            </div>
+            <div class="fandom-tile" onclick="shopByFandom('Arcade')">
+              <div class="icon">🕹️</div>
+              <div class="name">Arcade</div>
+            </div>
+            <div class="fandom-tile" onclick="shopByFandom('Classic')">
+              <div class="icon">🤓</div>
+              <div class="name">Classic Nerd</div>
+            </div>
+            <div class="fandom-tile" onclick="shopByFandom('Fantasy')">
+              <div class="icon">⚔️</div>
+              <div class="name">Fantasy</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="featured">
+          <div class="section-head">
+            <h2>FEATURED BOXES</h2>
+            <span onclick="nav('shop')">View all →</span>
+          </div>
+          <div class="boxes-grid" id="homeFeatured"></div>
+        </section>
+
+        <section class="how">
+          <h2>HOW IT WORKS</h2>
+          <div class="steps-grid">
+            <div class="step-card">
+              <div class="step-num">01</div>
+              <div class="step-title">Pick Your Fandom</div>
+              <div class="step-desc">
+                Browse 8 unique themes and choose the universe that speaks to
+                you.
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">02</div>
+              <div class="step-title">Subscribe or Buy Once</div>
+              <div class="step-desc">
+                Commit monthly or grab a single box — no pressure either way.
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">03</div>
+              <div class="step-title">We Curate the Magic</div>
+              <div class="step-desc">
+                Our team hunts down exclusive collectibles you won't find
+                anywhere else.
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">04</div>
+              <div class="step-title">Unbox & Be Amazed</div>
+              <div class="step-desc">
+                Your box arrives packed with 5–8 items. The surprise is the
+                whole point.
               </div>
             </div>
           </div>
-          <div class="checkout-panel">
-            <div class="form-section-title">Box Preferences</div>
-            <div class="field-row">
-              <div class="field"><label>Shirt Size</label>
-                <select><option>XS</option><option>S</option><option>M</option><option selected>L</option><option>XL</option><option>XXL</option></select>
+        </section>
+
+        <footer>
+          <div class="ft-logo">NERDBLOCK</div>
+          <div class="ft-links">
+            <a>About</a><a>FAQ</a><a>Privacy Policy</a><a>Terms</a
+            ><a>Contact</a>
+          </div>
+          <div>
+            © 2026 NerdBlock Inc. — Canada's Most Widely Distributed Monthly
+            Subscription Box.
+          </div>
+        </footer>
+      </div>
+
+      <!-- ─── PAGE: SHOP ────────────────────────────────────────────── -->
+      <div class="page" id="page-shop">
+        <div class="shop-header">
+          <h1>SHOP ALL BOXES</h1>
+          <p>
+            Discover mystery boxes for every fandom. Subscribe or buy a single
+            box.
+          </p>
+        </div>
+        <div class="shop-controls">
+          <div class="filter-pills" id="shopPills">
+            <button
+              class="pill active"
+              data-f="All"
+              onclick="filterShop(this, 'All')"
+            >
+              All
+            </button>
+            <button
+              class="pill"
+              data-f="Comics"
+              onclick="filterShop(this, 'Comics')"
+            >
+              🦸 Comics
+            </button>
+            <button
+              class="pill"
+              data-f="Anime"
+              onclick="filterShop(this, 'Anime')"
+            >
+              🎌 Anime
+            </button>
+            <button
+              class="pill"
+              data-f="Sci-Fi"
+              onclick="filterShop(this, 'Sci-Fi')"
+            >
+              🚀 Sci-Fi
+            </button>
+            <button
+              class="pill"
+              data-f="Gaming"
+              onclick="filterShop(this, 'Gaming')"
+            >
+              👾 Gaming
+            </button>
+            <button
+              class="pill"
+              data-f="Horror"
+              onclick="filterShop(this, 'Horror')"
+            >
+              🎃 Horror
+            </button>
+            <button
+              class="pill"
+              data-f="Arcade"
+              onclick="filterShop(this, 'Arcade')"
+            >
+              🕹️ Arcade
+            </button>
+            <button
+              class="pill"
+              data-f="Classic"
+              onclick="filterShop(this, 'Classic')"
+            >
+              🤓 Classic
+            </button>
+            <button
+              class="pill"
+              data-f="Fantasy"
+              onclick="filterShop(this, 'Fantasy')"
+            >
+              ⚔️ Fantasy
+            </button>
+          </div>
+          <select class="sort-select" onchange="sortShop(this.value)">
+            <option value="featured">Sort: Featured</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+            <option value="sale">On Sale First</option>
+          </select>
+        </div>
+        <div class="shop-grid" id="shopGrid"></div>
+      </div>
+
+      <!-- ─── PAGE: PRODUCT ─────────────────────────────────────────── -->
+      <div class="page" id="page-product">
+        <div class="product-page">
+          <div class="breadcrumb">
+            <span class="crumb" onclick="nav('home')">Home</span
+            ><span class="sep">›</span>
+            <span class="crumb" onclick="nav('shop')">Shop</span
+            ><span class="sep">›</span>
+            <span id="prodBreadcrumb" class="crumb" style="color: var(--text)"
+              >Box</span
+            >
+          </div>
+          <div class="product-layout">
+            <div>
+              <div class="product-visual" id="prodVisual"></div>
+            </div>
+            <div class="product-info">
+              <h1 id="prodName"></h1>
+              <div class="product-edition" id="prodEdition"></div>
+              <div
+                style="display: flex; gap: 8px; margin-bottom: 16px"
+                id="prodBadges"
+              ></div>
+              <div class="product-price" id="prodPrice"></div>
+              <div
+                style="
+                  font-size: 12px;
+                  color: var(--muted);
+                  margin-bottom: 18px;
+                  line-height: 1.6;
+                "
+                id="prodDesc"
+              ></div>
+              <div
+                style="
+                  font-size: 11px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.7px;
+                  color: var(--muted);
+                  margin-bottom: 8px;
+                "
+              >
+                Choose Your Plan
               </div>
-              <div class="field"><label>Content Rating</label>
-                <select><option selected>All Ages</option><option>13+</option><option>18+</option></select>
+              <div class="plan-options" id="planOptions"></div>
+              <div style="display: flex; gap: 10px; margin-top: 6px">
+                <button
+                  class="btn btn-primary btn-md"
+                  style="flex: 1"
+                  onclick="addToCartFromProduct()"
+                >
+                  Add to Cart
+                </button>
+                <button class="btn btn-outline btn-md">🎁 Gift</button>
               </div>
-            </div>
-            <div class="field">
-              <label>Billing Address</label>
-              <select><option>Same as shipping</option><option>Use different billing address</option></select>
-            </div>
-          </div>
-          <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-            <button class="btn btn-primary btn-md" onclick="checkoutNext(2)">Continue to Review →</button>
-          </div>
-        </div>
-
-        <!-- STEP 2: Review -->
-        <div class="checkout-step" id="cStep2">
-          <div class="checkout-panel">
-            <div class="form-section-title">Shipping To</div>
-            <div id="reviewShipping" style="font-size:13px;line-height:1.8;color:var(--muted);"></div>
-            <button class="btn btn-ghost btn-sm" style="margin-top:8px;" onclick="checkoutNext(1)">← Edit</button>
-          </div>
-          <div class="checkout-panel">
-            <div class="form-section-title">Order Items</div>
-            <div id="reviewItems"></div>
-          </div>
-          <div class="checkout-panel">
-            <div class="form-section-title">Subscription Terms</div>
-            <p style="font-size:12px;color:var(--muted);line-height:1.7;">By placing this order you agree to NerdBlock's <span style="color:var(--gold);">Terms of Service</span> and <span style="color:var(--gold);">Privacy Policy</span>. Subscriptions auto-renew each cycle. You can pause or cancel anytime from your account portal.</p>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-top:16px;">
-            <button class="btn btn-outline btn-md" onclick="checkoutNext(1)">← Back</button>
-            <button class="btn btn-primary btn-md" onclick="checkoutNext(3)">Continue to Payment →</button>
-          </div>
-        </div>
-
-        <!-- STEP 3: Payment -->
-        <div class="checkout-step" id="cStep3">
-          <div class="checkout-panel">
-            <div class="form-section-title">Payment Details</div>
-            <div class="card-brands">
-              <span class="card-brand">💳 Visa</span>
-              <span class="card-brand">💳 Mastercard</span>
-              <span class="card-brand">💳 Amex</span>
-              <span class="card-brand">🍎 Apple Pay</span>
-            </div>
-            <div style="background:rgba(74,142,255,.08);border:1px solid rgba(74,142,255,.25);border-radius:var(--r);padding:10px 14px;font-size:12px;color:#6aa0e0;margin-bottom:14px;display:flex;gap:8px;align-items:center;">
-              🔒 Payments are encrypted and processed securely. NerdBlock never stores card details.
-            </div>
-            <div class="field"><label>Name on Card</label><input placeholder="Jane Doe"></div>
-            <div class="field"><label>Card Number</label><input placeholder="•••• •••• •••• ••••" maxlength="19"></div>
-            <div class="field-row">
-              <div class="field"><label>Expiry Date</label><input placeholder="MM / YY" maxlength="7"></div>
-              <div class="field"><label>Security Code (CVV)</label><input placeholder="•••" maxlength="4"></div>
-            </div>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
-            <button class="btn btn-outline btn-md" onclick="checkoutNext(2)">← Back</button>
-            <button class="btn btn-primary btn-lg" onclick="placeOrder()">Place Order & Subscribe 🚀</button>
-          </div>
-        </div>
-
-        <!-- SUCCESS -->
-        <div class="checkout-step" id="cStepSuccess">
-          <div class="success-page">
-            <div class="success-icon">🎉</div>
-            <h2>ORDER CONFIRMED!</h2>
-            <p>Your NerdBlock is on its way. We'll send a confirmation email with tracking info when your box ships.</p>
-            <div style="display:flex;gap:12px;justify-content:center;">
-              <button class="btn btn-primary btn-md" onclick="nav('account')">View My Account</button>
-              <button class="btn btn-outline btn-md" onclick="nav('shop')">Keep Shopping</button>
+              <div class="product-meta" id="prodMeta"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- RIGHT: order summary -->
-      <div class="order-summary" id="orderSummaryBox">
-        <h3>Order Summary</h3>
-        <div id="osSummaryItems"></div>
-        <div id="osSummaryTotals"></div>
+      <!-- ─── PAGE: CART ────────────────────────────────────────────── -->
+      <div class="page" id="page-cart">
+        <div class="cart-page">
+          <h1>YOUR CART</h1>
+          <div id="cartContent"></div>
+        </div>
+      </div>
+
+      <!-- ─── PAGE: CHECKOUT ───────────────────────────────────────── -->
+      <div class="page" id="page-checkout">
+        <div class="checkout-page">
+          <h1>CHECKOUT</h1>
+          <p class="checkout-sub">
+            Complete your order — you're one step away from the good stuff.
+          </p>
+          <div class="checkout-progress" id="checkoutProgress">
+            <div class="cp-step active" data-s="1">
+              <div class="cp-num">1</div>
+              <span>Shipping</span>
+            </div>
+            <div class="cp-line"></div>
+            <div class="cp-step" data-s="2">
+              <div class="cp-num">2</div>
+              <span>Review</span>
+            </div>
+            <div class="cp-line"></div>
+            <div class="cp-step" data-s="3">
+              <div class="cp-num">3</div>
+              <span>Payment</span>
+            </div>
+          </div>
+          <div class="checkout-layout">
+            <div>
+              <div class="checkout-step active" id="cStep1">
+                <div class="checkout-panel">
+                  <div class="form-section-title">Contact Information</div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label>First Name</label
+                      ><input id="f_first" placeholder="Jane" />
+                    </div>
+                    <div class="field">
+                      <label>Last Name</label
+                      ><input id="f_last" placeholder="Doe" />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Email Address</label
+                    ><input
+                      id="f_email"
+                      placeholder="jane@email.com"
+                      type="email"
+                    />
+                  </div>
+                  <div class="field">
+                    <label>Phone (optional)</label
+                    ><input
+                      id="f_phone"
+                      placeholder="+1 416 555 0100"
+                      type="tel"
+                    />
+                  </div>
+                </div>
+                <div class="checkout-panel">
+                  <div class="form-section-title">Shipping Address</div>
+                  <div class="field">
+                    <label>Street Address</label
+                    ><input id="f_addr" placeholder="123 Maple St" />
+                  </div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label>City</label
+                      ><input id="f_city" placeholder="Toronto" />
+                    </div>
+                    <div class="field">
+                      <label>Province / State</label
+                      ><input id="f_prov" placeholder="ON" />
+                    </div>
+                  </div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label>Postal / ZIP Code</label
+                      ><input id="f_zip" placeholder="M4B 1T7" />
+                    </div>
+                    <div class="field">
+                      <label>Country</label>
+                      <select id="f_country">
+                        <option>Canada</option>
+                        <option>United States</option>
+                        <option>United Kingdom</option>
+                        <option>Australia</option>
+                        <option>Germany</option>
+                        <option>France</option>
+                        <option>Japan</option>
+                        <option>Other</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="checkout-panel">
+                  <div class="form-section-title">Box Preferences</div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label>Shirt Size</label>
+                      <select>
+                        <option>XS</option>
+                        <option>S</option>
+                        <option>M</option>
+                        <option selected>L</option>
+                        <option>XL</option>
+                        <option>XXL</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label>Content Rating</label>
+                      <select>
+                        <option selected>All Ages</option>
+                        <option>13+</option>
+                        <option>18+</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Billing Address</label>
+                    <select>
+                      <option>Same as shipping</option>
+                      <option>Use different billing address</option>
+                    </select>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-top: 16px;
+                  "
+                >
+                  <button
+                    class="btn btn-primary btn-md"
+                    onclick="checkoutNext(2)"
+                  >
+                    Continue to Review →
+                  </button>
+                </div>
+              </div>
+              <div class="checkout-step" id="cStep2">
+                <div class="checkout-panel">
+                  <div class="form-section-title">Shipping To</div>
+                  <div
+                    id="reviewShipping"
+                    style="
+                      font-size: 13px;
+                      line-height: 1.8;
+                      color: var(--muted);
+                    "
+                  ></div>
+                  <button
+                    class="btn btn-ghost btn-sm"
+                    style="margin-top: 8px"
+                    onclick="checkoutNext(1)"
+                  >
+                    ← Edit
+                  </button>
+                </div>
+                <div class="checkout-panel">
+                  <div class="form-section-title">Order Items</div>
+                  <div id="reviewItems"></div>
+                </div>
+                <div class="checkout-panel">
+                  <div class="form-section-title">Subscription Terms</div>
+                  <p
+                    style="
+                      font-size: 12px;
+                      color: var(--muted);
+                      line-height: 1.7;
+                    "
+                  >
+                    By placing this order you agree to NerdBlock's
+                    <span style="color: var(--gold)">Terms of Service</span> and
+                    <span style="color: var(--gold)">Privacy Policy</span>.
+                    Subscriptions auto-renew each cycle. You can pause or cancel
+                    anytime from your account portal.
+                  </p>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 16px;
+                  "
+                >
+                  <button
+                    class="btn btn-outline btn-md"
+                    onclick="checkoutNext(1)"
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    class="btn btn-primary btn-md"
+                    onclick="checkoutNext(3)"
+                  >
+                    Continue to Payment →
+                  </button>
+                </div>
+              </div>
+              <div class="checkout-step" id="cStep3">
+                <div class="checkout-panel">
+                  <div class="form-section-title">Payment Details</div>
+                  <div class="card-brands">
+                    <span class="card-brand">💳 Visa</span>
+                    <span class="card-brand">💳 Mastercard</span>
+                    <span class="card-brand">💳 Amex</span>
+                    <span class="card-brand">🍎 Apple Pay</span>
+                  </div>
+                  <div
+                    style="
+                      background: rgba(74, 142, 255, 0.08);
+                      border: 1px solid rgba(74, 142, 255, 0.25);
+                      border-radius: var(--r);
+                      padding: 10px 14px;
+                      font-size: 12px;
+                      color: #6aa0e0;
+                      margin-bottom: 14px;
+                      display: flex;
+                      gap: 8px;
+                      align-items: center;
+                    "
+                  >
+                    🔒 Payments are encrypted and processed securely. NerdBlock
+                    never stores card details.
+                  </div>
+                  <div class="field">
+                    <label>Name on Card</label><input placeholder="Jane Doe" />
+                  </div>
+                  <div class="field">
+                    <label>Card Number</label
+                    ><input placeholder="•••• •••• •••• ••••" maxlength="19" />
+                  </div>
+                  <div class="field-row">
+                    <div class="field">
+                      <label>Expiry Date</label
+                      ><input placeholder="MM / YY" maxlength="7" />
+                    </div>
+                    <div class="field">
+                      <label>Security Code (CVV)</label
+                      ><input placeholder="•••" maxlength="4" />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-top: 16px;
+                  "
+                >
+                  <button
+                    class="btn btn-outline btn-md"
+                    onclick="checkoutNext(2)"
+                  >
+                    ← Back
+                  </button>
+                  <button class="btn btn-primary btn-lg" onclick="placeOrder()">
+                    Place Order & Subscribe 🚀
+                  </button>
+                </div>
+              </div>
+              <div class="checkout-step" id="cStepSuccess">
+                <div class="success-page">
+                  <div class="success-icon">🎉</div>
+                  <h2>ORDER CONFIRMED!</h2>
+                  <p>
+                    Your NerdBlock is on its way. We'll send a confirmation
+                    email with tracking info when your box ships.
+                  </p>
+                  <div
+                    style="display: flex; gap: 12px; justify-content: center"
+                  >
+                    <button
+                      class="btn btn-primary btn-md"
+                      onclick="nav('account')"
+                    >
+                      View My Account
+                    </button>
+                    <button
+                      class="btn btn-outline btn-md"
+                      onclick="nav('shop')"
+                    >
+                      Keep Shopping
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="order-summary" id="orderSummaryBox">
+              <h3>Order Summary</h3>
+              <div id="osSummaryItems"></div>
+              <div id="osSummaryTotals"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── PAGE: ACCOUNT ─────────────────────────────────────────── -->
+      <div class="page" id="page-account">
+        <div style="max-width: 800px; margin: 0 auto; padding: 40px 28px 60px">
+          <h1
+            style="
+              font-family: var(--font-d);
+              font-size: 44px;
+              letter-spacing: 3px;
+              margin-bottom: 6px;
+            "
+          >
+            MY ACCOUNT
+          </h1>
+          <p style="color: var(--muted); margin-bottom: 32px">
+            Manage your subscriptions, boxes, and profile.
+          </p>
+          <div
+            style="display: grid; grid-template-columns: 180px 1fr; gap: 24px"
+          >
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <div
+                id="acct-tab-subs"
+                class="pill active"
+                style="
+                  border-radius: 8px;
+                  padding: 10px 14px;
+                  text-align: left;
+                  display: block;
+                  cursor: pointer;
+                "
+                onclick="acctTab('subs')"
+              >
+                📦 Subscriptions
+              </div>
+              <div
+                id="acct-tab-hist"
+                class="pill"
+                style="
+                  border-radius: 8px;
+                  padding: 10px 14px;
+                  text-align: left;
+                  display: block;
+                  cursor: pointer;
+                "
+                onclick="acctTab('hist')"
+              >
+                📜 Box History
+              </div>
+              <div
+                id="acct-tab-prof"
+                class="pill"
+                style="
+                  border-radius: 8px;
+                  padding: 10px 14px;
+                  text-align: left;
+                  display: block;
+                  cursor: pointer;
+                "
+                onclick="acctTab('prof')"
+              >
+                👤 Profile
+              </div>
+              <div
+                id="acct-tab-addr"
+                class="pill"
+                style="
+                  border-radius: 8px;
+                  padding: 10px 14px;
+                  text-align: left;
+                  display: block;
+                  cursor: pointer;
+                "
+                onclick="acctTab('addr')"
+              >
+                🏠 Addresses
+              </div>
+            </div>
+            <div>
+              <div id="acct-subs">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 16px;
+                  "
+                >
+                  <div style="font-weight: 700">Active Subscriptions</div>
+                  <button class="btn btn-primary btn-sm" onclick="nav('shop')">
+                    + Add Box
+                  </button>
+                </div>
+                <div
+                  class="cart-item"
+                  style="border-left: 3px solid var(--teal)"
+                >
+                  <div class="cart-item-icon">🦸</div>
+                  <div class="cart-item-info">
+                    <div class="cart-item-name">Classic NerdBox</div>
+                    <div class="cart-item-sub">
+                      Monthly · Renews Apr 1, 2026 ·
+                      <span class="badge badge-green">Active</span>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 8px">
+                    <button class="btn btn-outline btn-sm">Pause</button>
+                    <button class="btn btn-outline btn-sm">Skip</button>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      style="color: var(--red)"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="cart-item"
+                  style="border-left: 3px solid var(--blue); margin-top: 10px"
+                >
+                  <div class="cart-item-icon">🎌</div>
+                  <div class="cart-item-info">
+                    <div class="cart-item-name">Anime Box</div>
+                    <div class="cart-item-sub">
+                      3-Month Prepaid · Expires May 2026 ·
+                      <span class="badge badge-blue">Prepaid</span>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 8px">
+                    <button class="btn btn-outline btn-sm">Skip Month</button>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      style="color: var(--red)"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="cart-item"
+                  style="
+                    border-left: 3px solid var(--border);
+                    margin-top: 10px;
+                    opacity: 0.6;
+                  "
+                >
+                  <div class="cart-item-icon">🎃</div>
+                  <div class="cart-item-info">
+                    <div class="cart-item-name" style="color: var(--muted)">
+                      Horror Block
+                    </div>
+                    <div class="cart-item-sub">
+                      Cancelled · Jan 2026 ·
+                      <span class="badge badge-muted">Cancelled</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-outline btn-sm">Resubscribe</button>
+                </div>
+              </div>
+              <div id="acct-hist" style="display: none">
+                <div style="font-weight: 700; margin-bottom: 16px">
+                  Box History
+                </div>
+                <table
+                  style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 13px;
+                  "
+                >
+                  <thead>
+                    <tr
+                      style="
+                        border-bottom: 1px solid var(--border);
+                        color: var(--muted);
+                        font-size: 11px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                      "
+                    >
+                      <th style="padding: 8px 10px; text-align: left">Box</th>
+                      <th style="padding: 8px 10px; text-align: left">Month</th>
+                      <th style="padding: 8px 10px; text-align: left">
+                        Status
+                      </th>
+                      <th style="padding: 8px 10px; text-align: left">
+                        Tracking
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid var(--border)">
+                      <td style="padding: 8px 10px">🦸 Classic NerdBox</td>
+                      <td style="padding: 8px 10px; color: var(--muted)">
+                        Feb 2026
+                      </td>
+                      <td style="padding: 8px 10px">
+                        <span
+                          class="badge badge-teal"
+                          style="
+                            background: rgba(56, 201, 176, 0.15);
+                            color: var(--teal);
+                            border: 1px solid rgba(56, 201, 176, 0.3);
+                          "
+                          >Delivered</span
+                        >
+                      </td>
+                      <td
+                        style="
+                          padding: 8px 10px;
+                          color: var(--gold);
+                          font-size: 12px;
+                        "
+                      >
+                        NB-293847
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border)">
+                      <td style="padding: 8px 10px">🎌 Anime Box</td>
+                      <td style="padding: 8px 10px; color: var(--muted)">
+                        Feb 2026
+                      </td>
+                      <td style="padding: 8px 10px">
+                        <span
+                          class="badge badge-teal"
+                          style="
+                            background: rgba(56, 201, 176, 0.15);
+                            color: var(--teal);
+                            border: 1px solid rgba(56, 201, 176, 0.3);
+                          "
+                          >Delivered</span
+                        >
+                      </td>
+                      <td
+                        style="
+                          padding: 8px 10px;
+                          color: var(--gold);
+                          font-size: 12px;
+                        "
+                      >
+                        NB-293848
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border)">
+                      <td style="padding: 8px 10px">🦸 Classic NerdBox</td>
+                      <td style="padding: 8px 10px; color: var(--muted)">
+                        Jan 2026
+                      </td>
+                      <td style="padding: 8px 10px">
+                        <span
+                          class="badge badge-teal"
+                          style="
+                            background: rgba(56, 201, 176, 0.15);
+                            color: var(--teal);
+                            border: 1px solid rgba(56, 201, 176, 0.3);
+                          "
+                          >Delivered</span
+                        >
+                      </td>
+                      <td
+                        style="
+                          padding: 8px 10px;
+                          color: var(--gold);
+                          font-size: 12px;
+                        "
+                      >
+                        NB-281044
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div id="acct-prof" style="display: none">
+                <div style="font-weight: 700; margin-bottom: 16px">
+                  Profile Information
+                </div>
+                <div class="checkout-panel">
+                  <div class="field-row">
+                    <div class="field">
+                      <label>First Name</label><input value="Jane" />
+                    </div>
+                    <div class="field">
+                      <label>Last Name</label><input value="Doe" />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Email</label
+                    ><input value="jane.doe@email.com" type="email" />
+                  </div>
+                  <div class="field">
+                    <label>Phone</label
+                    ><input value="+1 416 555 0192" type="tel" />
+                  </div>
+                  <hr class="div" />
+                  <div class="field-row">
+                    <div class="field">
+                      <label>Shirt Size</label
+                      ><select>
+                        <option>XS</option>
+                        <option>S</option>
+                        <option>M</option>
+                        <option selected>L</option>
+                        <option>XL</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label>Content Rating</label
+                      ><select>
+                        <option selected>All Ages</option>
+                        <option>13+</option>
+                        <option>18+</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 10px;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-top: 8px;
+                    "
+                  >
+                    <button class="btn btn-primary btn-sm">Save Changes</button>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      style="color: var(--red)"
+                    >
+                      Delete Account
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div id="acct-addr" style="display: none">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 16px;
+                  "
+                >
+                  <div style="font-weight: 700">Saved Addresses</div>
+                  <button class="btn btn-outline btn-sm">+ Add Address</button>
+                </div>
+                <div class="checkout-panel">
+                  <div style="font-size: 13px; line-height: 1.8">
+                    123 Maple St<br />Toronto, ON M4B 1T7<br />Canada
+                  </div>
+                  <div style="display: flex; gap: 8px; margin-top: 10px">
+                    <span class="badge badge-green">Default Shipping</span
+                    ><button class="btn btn-ghost btn-sm">Edit</button
+                    ><button
+                      class="btn btn-ghost btn-sm"
+                      style="color: var(--red)"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+    <!-- end #app -->
 
-<!-- ─── PAGE: ACCOUNT ─────────────────────────────────────────── -->
-<div class="page" id="page-account">
-  <div style="max-width:800px;margin:0 auto;padding:40px 28px 60px;">
-    <h1 style="font-family:var(--font-d);font-size:44px;letter-spacing:3px;margin-bottom:6px;">MY ACCOUNT</h1>
-    <p style="color:var(--muted);margin-bottom:32px;">Manage your subscriptions, boxes, and profile.</p>
+    <script>
+      const BOXES = [
+        {
+          id: 1,
+          name: "Classic NerdBox",
+          fandom: "Comics",
+          icon: "🦸",
+          price: 29.99,
+          sale: null,
+          desc: "The iconic all-rounder — comic art, collectibles, enamel pins & exclusive apparel celebrating the golden age of comics.",
+          bg: "linear-gradient(135deg,#1a1028,#2e1a50)",
+          edition: "March 2026",
+          stock: "in",
+          exclusive: true,
+        },
+        {
+          id: 2,
+          name: "Anime Block",
+          fandom: "Anime",
+          icon: "🎌",
+          price: 27.99,
+          sale: null,
+          desc: "Straight from Japan — figures, art books, keychains, and apparel from the hottest current and classic series.",
+          bg: "linear-gradient(135deg,#1a1028,#501a2e)",
+          edition: "March 2026",
+          stock: "low",
+          exclusive: false,
+        },
+        {
+          id: 3,
+          name: "Horror Box",
+          fandom: "Horror",
+          icon: "🎃",
+          price: 24.99,
+          sale: 32.99,
+          desc: "Dare you open it? Macabre collectibles, horror icons, and exclusive merch from the scariest franchises in cinema.",
+          bg: "linear-gradient(135deg,#0f1a10,#1a3020)",
+          edition: "March 2026",
+          stock: "in",
+          exclusive: false,
+        },
+        {
+          id: 4,
+          name: "Gaming Block",
+          fandom: "Gaming",
+          icon: "👾",
+          price: 31.99,
+          sale: null,
+          desc: "Level up your shelf — controllers, limited prints, plushies, and gear from retro classics and modern hits.",
+          bg: "linear-gradient(135deg,#0a1020,#1a2850)",
+          edition: "March 2026",
+          stock: "in",
+          exclusive: true,
+        },
+        {
+          id: 5,
+          name: "Sci-Fi Vault",
+          fandom: "Sci-Fi",
+          icon: "🚀",
+          price: 34.99,
+          sale: null,
+          desc: "Blast off — exclusive items from Star Wars, Star Trek, Dune, and beyond. For fans who dream in hyperdrive.",
+          bg: "linear-gradient(135deg,#0a1018,#0a2030)",
+          edition: "March 2026",
+          stock: "in",
+          exclusive: true,
+        },
+        {
+          id: 6,
+          name: "Arcade Capsule",
+          fandom: "Arcade",
+          icon: "🕹️",
+          price: 26.99,
+          sale: 29.99,
+          desc: "Coin-op nostalgia in a box — Pac-Man, Donkey Kong, Street Fighter and more. Press start.",
+          bg: "linear-gradient(135deg,#1a1010,#301828)",
+          edition: "March 2026",
+          stock: "low",
+          exclusive: false,
+        },
+        {
+          id: 7,
+          name: "Classic Nerd Box",
+          fandom: "Classic",
+          icon: "🤓",
+          price: 28.99,
+          sale: null,
+          desc: "Science, maths, engineering culture — Big Bang Theory, Rick & Morty, NASA prints, and more for the OG nerds.",
+          bg: "linear-gradient(135deg,#101828,#183040)",
+          edition: "March 2026",
+          stock: "in",
+          exclusive: false,
+        },
+        {
+          id: 8,
+          name: "Fantasy Realm",
+          fandom: "Fantasy",
+          icon: "⚔️",
+          price: 33.99,
+          sale: null,
+          desc: "Dragons, wizards, and dungeons — D&D, Lord of the Rings, and every magical realm in between.",
+          bg: "linear-gradient(135deg,#180a10,#301428)",
+          edition: "March 2026",
+          stock: "in",
+          exclusive: true,
+        },
+      ];
 
-    <div style="display:grid;grid-template-columns:180px 1fr;gap:24px;">
-      <!-- sidebar -->
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <div id="acct-tab-subs" class="pill active" style="border-radius:8px;padding:10px 14px;text-align:left;display:block;cursor:pointer;" onclick="acctTab('subs')">📦 Subscriptions</div>
-        <div id="acct-tab-hist" class="pill" style="border-radius:8px;padding:10px 14px;text-align:left;display:block;cursor:pointer;" onclick="acctTab('hist')">📜 Box History</div>
-        <div id="acct-tab-prof" class="pill" style="border-radius:8px;padding:10px 14px;text-align:left;display:block;cursor:pointer;" onclick="acctTab('prof')">👤 Profile</div>
-        <div id="acct-tab-addr" class="pill" style="border-radius:8px;padding:10px 14px;text-align:left;display:block;cursor:pointer;" onclick="acctTab('addr')">🏠 Addresses</div>
-      </div>
-      <!-- content panels -->
-      <div>
-        <div id="acct-subs">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <div style="font-weight:700;">Active Subscriptions</div>
-            <button class="btn btn-primary btn-sm" onclick="nav('shop')">+ Add Box</button>
-          </div>
-          <div class="cart-item" style="border-left:3px solid var(--teal);">
-            <div class="cart-item-icon">🦸</div>
-            <div class="cart-item-info">
-              <div class="cart-item-name">Classic NerdBox</div>
-              <div class="cart-item-sub">Monthly · Renews Apr 1, 2026 · <span class="badge badge-green">Active</span></div>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-outline btn-sm">Pause</button>
-              <button class="btn btn-outline btn-sm">Skip</button>
-              <button class="btn btn-ghost btn-sm" style="color:var(--red);">Cancel</button>
-            </div>
-          </div>
-          <div class="cart-item" style="border-left:3px solid var(--blue);margin-top:10px;">
-            <div class="cart-item-icon">🎌</div>
-            <div class="cart-item-info">
-              <div class="cart-item-name">Anime Box</div>
-              <div class="cart-item-sub">3-Month Prepaid · Expires May 2026 · <span class="badge badge-blue">Prepaid</span></div>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-outline btn-sm">Skip Month</button>
-              <button class="btn btn-ghost btn-sm" style="color:var(--red);">Cancel</button>
-            </div>
-          </div>
-          <div class="cart-item" style="border-left:3px solid var(--border);margin-top:10px;opacity:.6;">
-            <div class="cart-item-icon">🎃</div>
-            <div class="cart-item-info">
-              <div class="cart-item-name" style="color:var(--muted);">Horror Block</div>
-              <div class="cart-item-sub">Cancelled · Jan 2026 · <span class="badge badge-muted">Cancelled</span></div>
-            </div>
-            <button class="btn btn-outline btn-sm">Resubscribe</button>
-          </div>
-        </div>
-        <div id="acct-hist" style="display:none;">
-          <div style="font-weight:700;margin-bottom:16px;">Box History</div>
-          <table style="width:100%;border-collapse:collapse;font-size:13px;">
-            <thead><tr style="border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;">
-              <th style="padding:8px 10px;text-align:left;">Box</th>
-              <th style="padding:8px 10px;text-align:left;">Month</th>
-              <th style="padding:8px 10px;text-align:left;">Status</th>
-              <th style="padding:8px 10px;text-align:left;">Tracking</th>
-            </tr></thead>
-            <tbody>
-              <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 10px;">🦸 Classic NerdBox</td><td style="padding:8px 10px;color:var(--muted);">Feb 2026</td><td style="padding:8px 10px;"><span class="badge badge-teal" style="background:rgba(56,201,176,.15);color:var(--teal);border:1px solid rgba(56,201,176,.3);">Delivered</span></td><td style="padding:8px 10px;color:var(--gold);font-size:12px;">NB-293847</td></tr>
-              <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 10px;">🎌 Anime Box</td><td style="padding:8px 10px;color:var(--muted);">Feb 2026</td><td style="padding:8px 10px;"><span class="badge badge-teal" style="background:rgba(56,201,176,.15);color:var(--teal);border:1px solid rgba(56,201,176,.3);">Delivered</span></td><td style="padding:8px 10px;color:var(--gold);font-size:12px;">NB-293848</td></tr>
-              <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px 10px;">🦸 Classic NerdBox</td><td style="padding:8px 10px;color:var(--muted);">Jan 2026</td><td style="padding:8px 10px;"><span class="badge badge-teal" style="background:rgba(56,201,176,.15);color:var(--teal);border:1px solid rgba(56,201,176,.3);">Delivered</span></td><td style="padding:8px 10px;color:var(--gold);font-size:12px;">NB-281044</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div id="acct-prof" style="display:none;">
-          <div style="font-weight:700;margin-bottom:16px;">Profile Information</div>
-          <div class="checkout-panel">
-            <div class="field-row"><div class="field"><label>First Name</label><input value="Jane"></div><div class="field"><label>Last Name</label><input value="Doe"></div></div>
-            <div class="field"><label>Email</label><input value="jane.doe@email.com" type="email"></div>
-            <div class="field"><label>Phone</label><input value="+1 416 555 0192" type="tel"></div>
-            <hr class="div">
-            <div class="field-row"><div class="field"><label>Shirt Size</label><select><option>XS</option><option>S</option><option>M</option><option selected>L</option><option>XL</option></select></div><div class="field"><label>Content Rating</label><select><option selected>All Ages</option><option>13+</option><option>18+</option></select></div></div>
-            <div style="display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:8px;">
-              <button class="btn btn-primary btn-sm">Save Changes</button>
-              <button class="btn btn-ghost btn-sm" style="color:var(--red);">Delete Account</button>
-            </div>
-          </div>
-        </div>
-        <div id="acct-addr" style="display:none;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-weight:700;">Saved Addresses</div><button class="btn btn-outline btn-sm">+ Add Address</button></div>
-          <div class="checkout-panel">
-            <div style="font-size:13px;line-height:1.8;">123 Maple St<br>Toronto, ON M4B 1T7<br>Canada</div>
-            <div style="display:flex;gap:8px;margin-top:10px;"><span class="badge badge-green">Default Shipping</span><button class="btn btn-ghost btn-sm">Edit</button><button class="btn btn-ghost btn-sm" style="color:var(--red);">Remove</button></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+      const PLANS = [
+        {
+          id: "monthly",
+          label: "Monthly Subscription",
+          suffix: "/mo",
+          mult: 1,
+        },
+        {
+          id: "3month",
+          label: "3-Month Prepaid",
+          suffix: " total",
+          mult: 2.85,
+        },
+        { id: "6month", label: "6-Month Prepaid", suffix: " total", mult: 5.4 },
+        {
+          id: "12month",
+          label: "12-Month Prepaid",
+          suffix: " total",
+          mult: 9.9,
+        },
+        { id: "onetime", label: "One-Time Box", suffix: "", mult: 1.15 },
+      ];
 
-</div><!-- end #app -->
+      let currentPage = "home";
+      let cart = [];
+      let selectedProductId = null;
+      let selectedPlanId = "monthly";
+      let shopFilter = "All";
+      let shopSort = "featured";
+      let checkoutStep = 1;
+      let loggedIn = false;
+      let currentUser = null;
 
-<script>
-/* ════════════════════════════════════════════════════════════════
-   DATA
-════════════════════════════════════════════════════════════════ */
-const BOXES = [
-  { id:1,  name:'Classic NerdBox',   fandom:'Comics',  icon:'🦸', price:29.99, sale:null,  desc:'The iconic all-rounder — comic art, collectibles, enamel pins & exclusive apparel celebrating the golden age of comics.', bg:'linear-gradient(135deg,#1a1028,#2e1a50)', edition:'March 2026', stock:'in', exclusive:true },
-  { id:2,  name:'Anime Block',       fandom:'Anime',   icon:'🎌', price:27.99, sale:null,  desc:'Straight from Japan — figures, art books, keychains, and apparel from the hottest current and classic series.', bg:'linear-gradient(135deg,#1a1028,#501a2e)', edition:'March 2026', stock:'low', exclusive:false },
-  { id:3,  name:'Horror Box',        fandom:'Horror',  icon:'🎃', price:24.99, sale:32.99, desc:'Dare you open it? Macabre collectibles, horror icons, and exclusive merch from the scariest franchises in cinema.', bg:'linear-gradient(135deg,#0f1a10,#1a3020)', edition:'March 2026', stock:'in', exclusive:false },
-  { id:4,  name:'Gaming Block',      fandom:'Gaming',  icon:'👾', price:31.99, sale:null,  desc:'Level up your shelf — controllers, limited prints, plushies, and gear from retro classics and modern hits.', bg:'linear-gradient(135deg,#0a1020,#1a2850)', edition:'March 2026', stock:'in', exclusive:true },
-  { id:5,  name:'Sci-Fi Vault',      fandom:'Sci-Fi',  icon:'🚀', price:34.99, sale:null,  desc:'Blast off — exclusive items from Star Wars, Star Trek, Dune, and beyond. For fans who dream in hyperdrive.', bg:'linear-gradient(135deg,#0a1018,#0a2030)', edition:'March 2026', stock:'in', exclusive:true },
-  { id:6,  name:'Arcade Capsule',    fandom:'Arcade',  icon:'🕹️', price:26.99, sale:29.99, desc:'Coin-op nostalgia in a box — Pac-Man, Donkey Kong, Street Fighter and more. Press start.', bg:'linear-gradient(135deg,#1a1010,#301828)', edition:'March 2026', stock:'low', exclusive:false },
-  { id:7,  name:'Classic Nerd Box',  fandom:'Classic', icon:'🤓', price:28.99, sale:null,  desc:'Science, maths, engineering culture — Big Bang Theory, Rick & Morty, NASA prints, and more for the OG nerds.', bg:'linear-gradient(135deg,#101828,#183040)', edition:'March 2026', stock:'in', exclusive:false },
-  { id:8,  name:'Fantasy Realm',     fandom:'Fantasy', icon:'⚔️', price:33.99, sale:null,  desc:'Dragons, wizards, and dungeons — D&D, Lord of the Rings, and every magical realm in between.', bg:'linear-gradient(135deg,#180a10,#301428)', edition:'March 2026', stock:'in', exclusive:true },
-];
+      /* ── AUTH UI ── */
+      function updateAuthUI() {
+        const acctLink = document.querySelector(
+          '.nav-link[data-page="account"]',
+        );
+        if (acctLink) acctLink.style.display = loggedIn ? "" : "none";
 
-const PLANS = [
-  { id:'monthly',  label:'Monthly Subscription', suffix:'/mo', mult:1 },
-  { id:'3month',   label:'3-Month Prepaid',       suffix:' total', mult:2.85 },
-  { id:'6month',   label:'6-Month Prepaid',       suffix:' total', mult:5.4 },
-  { id:'12month',  label:'12-Month Prepaid',      suffix:' total', mult:9.9 },
-  { id:'onetime',  label:'One-Time Box',          suffix:'', mult:1.15 },
-];
+        const mobileAcctLink = document.querySelector(
+          '#mobileMenu .mobile-nav-link[data-page="account"]',
+        );
+        if (mobileAcctLink)
+          mobileAcctLink.style.display = loggedIn ? "" : "none";
 
-/* ═══ STATE ════════════════════════════════════════════════════ */
-let currentPage = 'home';
-let cart = [];
-let selectedProductId = null;
-let selectedPlanId = 'monthly';
-let shopFilter = 'All';
-let shopSort = 'featured';
-let checkoutStep = 1;
+        const loginBtn = document.getElementById("navLoginBtn");
+        if (loginBtn) {
+          if (loggedIn) {
+            loginBtn.textContent = "👤 " + currentUser + "  ·  Sign Out";
+            loginBtn.onclick = handleSignOut;
+            loginBtn.style.color = "var(--gold)";
+            loginBtn.style.borderColor = "rgba(240,192,64,.35)";
+            loginBtn.style.background = "var(--gold-dim)";
+          } else {
+            loginBtn.textContent = "⚡ Sign In";
+            loginBtn.onclick = openLogin;
+            loginBtn.style.color = "";
+            loginBtn.style.borderColor = "";
+            loginBtn.style.background = "";
+          }
+        }
 
-/* ═══ NAVIGATION ═══════════════════════════════════════════════ */
-function nav(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  const el = document.getElementById('page-' + page);
-  if (el) el.classList.add('active');
-  const link = document.querySelector(`.nav-link[data-page="${page}"]`);
-  if (link) link.classList.add('active');
-  currentPage = page;
-  window.scrollTo(0, 0);
+        const mobileLoginBtn = document.getElementById("mobileLoginBtn");
+        if (mobileLoginBtn) {
+          mobileLoginBtn.textContent = loggedIn ? "👤 Sign Out" : "⚡ Sign In";
+          mobileLoginBtn.onclick = loggedIn
+            ? handleSignOut
+            : closeMobileAndOpenLogin;
+        }
+      }
 
-  if (page === 'shop')    renderShop();
-  if (page === 'home')    renderHome();
-  if (page === 'cart')    renderCart();
-  if (page === 'checkout') renderCheckout();
-}
+      function handleSignOut() {
+        loggedIn = false;
+        currentUser = null;
+        if (currentPage === "account") nav("home");
+        updateAuthUI();
+        showToast("👋 Signed out. See you next time!");
+      }
 
-/* ═══ BOX CARD HTML ═══════════════════════════════════════════ */
-function boxCardHTML(b, showAdd = true) {
-  const price = b.sale
-    ? `<span class="box-price-old">$${b.sale.toFixed(2)}</span>$${b.price.toFixed(2)}`
-    : `$${b.price.toFixed(2)}`;
-  const stockBadge = b.stock === 'low'
-    ? `<span class="badge badge-yellow">Low Stock</span>`
-    : `<span class="badge badge-green">In Stock</span>`;
-  const saleBadge = b.sale ? `<span class="badge badge-red">Sale</span>` : '';
-  const exclBadge = b.exclusive ? `<span class="badge badge-blue">Exclusive</span>` : '';
+      /* ── LOGIN MODAL ── */
+      function openLogin() {
+        document.getElementById("loginOverlay").classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+      function closeLogin() {
+        document.getElementById("loginOverlay").classList.remove("open");
+        document.body.style.overflow = "";
+      }
+      function overlayClick(e) {
+        if (e.target === document.getElementById("loginOverlay")) closeLogin();
+      }
+      function closeMobileAndOpenLogin() {
+        document.getElementById("mobileMenu").classList.remove("open");
+        document.getElementById("hamburger").classList.remove("open");
+        openLogin();
+      }
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".modal-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".modal-panel")
+          .forEach((p) => p.classList.remove("active"));
+        document.getElementById("tab-" + tab).classList.add("active");
+        document.getElementById("panel-" + tab).classList.add("active");
+      }
+      function updateStrength(val) {
+        const segs = [
+          document.getElementById("seg1"),
+          document.getElementById("seg2"),
+          document.getElementById("seg3"),
+          document.getElementById("seg4"),
+        ];
+        const label = document.getElementById("strengthLabel");
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val)) score++;
+        if (/[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        const colors = ["#e03a2a", "#f0a030", "#f0c040", "#38c9b0"];
+        const labels = ["Weak", "Fair", "Good", "Strong"];
+        segs.forEach((s, i) => {
+          s.style.background = i < score ? colors[score - 1] : "var(--border)";
+        });
+        label.textContent =
+          val.length === 0
+            ? "Enter a password"
+            : score > 0
+              ? labels[score - 1]
+              : "Too weak";
+        label.style.color =
+          score > 0 && val.length > 0 ? colors[score - 1] : "var(--muted)";
+      }
+      function handleLogin() {
+        const email = document.getElementById("li-email").value.trim();
+        const pass = document.getElementById("li-pass").value;
+        if (!email || !pass) {
+          showToast("⚠️ Please fill in all fields.");
+          return;
+        }
+        loggedIn = true;
+        currentUser = email.split("@")[0];
+        closeLogin();
+        updateAuthUI();
+        showToast("⚡ Welcome back, " + currentUser + "!");
+      }
+      function handleRegister() {
+        const first = document.getElementById("reg-first").value.trim();
+        const email = document.getElementById("reg-email").value.trim();
+        const pass = document.getElementById("reg-pass").value;
+        if (!first || !email || !pass) {
+          showToast("⚠️ Please fill in all fields.");
+          return;
+        }
+        loggedIn = true;
+        currentUser = first;
+        closeLogin();
+        updateAuthUI();
+        showToast("🎉 Account created! Welcome to NerdBlock, " + first + "!");
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeLogin();
+      });
 
-  return `
+      /* ── NAV ── */
+      function nav(page) {
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".nav-link")
+          .forEach((l) => l.classList.remove("active"));
+        const el = document.getElementById("page-" + page);
+        if (el) el.classList.add("active");
+        const link = document.querySelector(`.nav-link[data-page="${page}"]`);
+        if (link) link.classList.add("active");
+        currentPage = page;
+        window.scrollTo(0, 0);
+        if (page === "shop") renderShop();
+        if (page === "home") renderHome();
+        if (page === "cart") renderCart();
+        if (page === "checkout") renderCheckout();
+      }
+
+      function boxCardHTML(b, showAdd = true) {
+        const price = b.sale
+          ? `<span class="box-price-old">$${b.sale.toFixed(2)}</span>$${b.price.toFixed(2)}`
+          : `$${b.price.toFixed(2)}`;
+        const stockBadge =
+          b.stock === "low"
+            ? `<span class="badge badge-yellow">Low Stock</span>`
+            : `<span class="badge badge-green">In Stock</span>`;
+        const saleBadge = b.sale
+          ? `<span class="badge badge-red">Sale</span>`
+          : "";
+        const exclBadge = b.exclusive
+          ? `<span class="badge badge-blue">Exclusive</span>`
+          : "";
+        return `
     <div class="box-card" onclick="openProduct(${b.id})">
       <div class="box-img">
         <div class="box-img-bg" style="background:${b.bg};"></div>
@@ -939,138 +3048,140 @@ function boxCardHTML(b, showAdd = true) {
         <div class="box-fandom">${b.fandom} · ${b.edition}</div>
         <div class="box-footer">
           <div class="box-price">${price}<span style="font-size:10px;color:var(--muted);font-family:var(--font-b);font-weight:400;">/mo</span></div>
-          ${showAdd ? `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();quickAdd(${b.id})">Add</button>` : ''}
+          ${showAdd ? `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();quickAdd(${b.id})">Add</button>` : ""}
         </div>
       </div>
     </div>`;
-}
+      }
 
-/* ═══ HOME ════════════════════════════════════════════════════ */
-function renderHome() {
-  const featured = BOXES.filter(b => b.exclusive || b.sale).slice(0, 4);
-  document.getElementById('homeFeatured').innerHTML = featured.map(b => boxCardHTML(b)).join('');
-}
+      function renderHome() {
+        const featured = BOXES.filter((b) => b.exclusive || b.sale).slice(0, 4);
+        document.getElementById("homeFeatured").innerHTML = featured
+          .map((b) => boxCardHTML(b))
+          .join("");
+      }
 
-/* ═══ SHOP ════════════════════════════════════════════════════ */
-function renderShop() {
-  let boxes = shopFilter === 'All' ? [...BOXES] : BOXES.filter(b => b.fandom === shopFilter);
-  if (shopSort === 'price-asc')  boxes.sort((a,b) => a.price - b.price);
-  if (shopSort === 'price-desc') boxes.sort((a,b) => b.price - a.price);
-  if (shopSort === 'sale')       boxes.sort((a,b) => (b.sale?1:0) - (a.sale?1:0));
-  document.getElementById('shopGrid').innerHTML = boxes.map(b => boxCardHTML(b)).join('');
-}
+      function renderShop() {
+        let boxes =
+          shopFilter === "All"
+            ? [...BOXES]
+            : BOXES.filter((b) => b.fandom === shopFilter);
+        if (shopSort === "price-asc") boxes.sort((a, b) => a.price - b.price);
+        if (shopSort === "price-desc") boxes.sort((a, b) => b.price - a.price);
+        if (shopSort === "sale")
+          boxes.sort((a, b) => (b.sale ? 1 : 0) - (a.sale ? 1 : 0));
+        document.getElementById("shopGrid").innerHTML = boxes
+          .map((b) => boxCardHTML(b))
+          .join("");
+      }
 
-function filterShop(el, fandom) {
-  shopFilter = fandom;
-  document.querySelectorAll('#shopPills .pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  renderShop();
-}
+      function filterShop(el, fandom) {
+        shopFilter = fandom;
+        document
+          .querySelectorAll("#shopPills .pill")
+          .forEach((p) => p.classList.remove("active"));
+        el.classList.add("active");
+        renderShop();
+      }
 
-function sortShop(val) {
-  shopSort = val;
-  renderShop();
-}
+      function sortShop(val) {
+        shopSort = val;
+        renderShop();
+      }
 
-function shopByFandom(fandom) {
-  shopFilter = fandom;
-  nav('shop');
-  document.querySelectorAll('#shopPills .pill').forEach(p => {
-    p.classList.toggle('active', p.dataset.f === fandom);
-  });
-}
+      function shopByFandom(fandom) {
+        shopFilter = fandom;
+        nav("shop");
+        document.querySelectorAll("#shopPills .pill").forEach((p) => {
+          p.classList.toggle("active", p.dataset.f === fandom);
+        });
+      }
 
-/* ═══ PRODUCT PAGE ════════════════════════════════════════════ */
-function openProduct(id) {
-  const b = BOXES.find(x => x.id === id);
-  if (!b) return;
-  selectedProductId = id;
-  selectedPlanId = 'monthly';
-
-  document.getElementById('prodBreadcrumb').textContent = b.name;
-  document.getElementById('prodName').textContent = b.name;
-  document.getElementById('prodEdition').textContent = `${b.fandom} · ${b.edition}`;
-  document.getElementById('prodPrice').textContent = `$${b.price.toFixed(2)}/mo`;
-  document.getElementById('prodDesc').textContent = b.desc;
-
-  // visual
-  const vis = document.getElementById('prodVisual');
-  vis.innerHTML = `<div style="position:absolute;inset:0;background:${b.bg};"></div><div style="position:relative;z-index:1;font-size:80px;">${b.icon}</div>`;
-
-  // badges
-  const badges = [];
-  if (b.stock === 'low') badges.push(`<span class="badge badge-yellow">Low Stock</span>`);
-  else badges.push(`<span class="badge badge-green">In Stock</span>`);
-  if (b.sale) badges.push(`<span class="badge badge-red">On Sale</span>`);
-  if (b.exclusive) badges.push(`<span class="badge badge-blue">Exclusive</span>`);
-  document.getElementById('prodBadges').innerHTML = badges.join('');
-
-  // plans
-  document.getElementById('planOptions').innerHTML = PLANS.map(p => {
-    const planPrice = (b.price * p.mult).toFixed(2);
-    return `<div class="plan-opt ${p.id === 'monthly' ? 'selected' : ''}" onclick="selectPlan(this,'${p.id}')">
-      <input type="radio" name="plan" ${p.id === 'monthly' ? 'checked' : ''}>
+      function openProduct(id) {
+        const b = BOXES.find((x) => x.id === id);
+        if (!b) return;
+        selectedProductId = id;
+        selectedPlanId = "monthly";
+        document.getElementById("prodBreadcrumb").textContent = b.name;
+        document.getElementById("prodName").textContent = b.name;
+        document.getElementById("prodEdition").textContent =
+          `${b.fandom} · ${b.edition}`;
+        document.getElementById("prodPrice").textContent =
+          `$${b.price.toFixed(2)}/mo`;
+        document.getElementById("prodDesc").textContent = b.desc;
+        const vis = document.getElementById("prodVisual");
+        vis.innerHTML = `<div style="position:absolute;inset:0;background:${b.bg};"></div><div style="position:relative;z-index:1;font-size:80px;">${b.icon}</div>`;
+        const badges = [];
+        if (b.stock === "low")
+          badges.push(`<span class="badge badge-yellow">Low Stock</span>`);
+        else badges.push(`<span class="badge badge-green">In Stock</span>`);
+        if (b.sale) badges.push(`<span class="badge badge-red">On Sale</span>`);
+        if (b.exclusive)
+          badges.push(`<span class="badge badge-blue">Exclusive</span>`);
+        document.getElementById("prodBadges").innerHTML = badges.join("");
+        document.getElementById("planOptions").innerHTML = PLANS.map((p) => {
+          const planPrice = (b.price * p.mult).toFixed(2);
+          return `<div class="plan-opt ${p.id === "monthly" ? "selected" : ""}" onclick="selectPlan(this,'${p.id}')">
+      <input type="radio" name="plan" ${p.id === "monthly" ? "checked" : ""}>
       <span>${p.label}</span>
       <span class="plan-price">$${planPrice}${p.suffix}</span>
     </div>`;
-  }).join('');
-
-  // meta
-  document.getElementById('prodMeta').innerHTML = `<hr class="div">
+        }).join("");
+        document.getElementById("prodMeta").innerHTML = `<hr class="div">
     <div class="meta-row"><span class="meta-key">Fandom</span><span>${b.fandom}</span></div>
     <div class="meta-row"><span class="meta-key">Ships To</span><span>Canada, USA, UK, EU + 50 countries</span></div>
     <div class="meta-row"><span class="meta-key">Ship Window</span><span>Feb 28 – Mar 5</span></div>
     <div class="meta-row"><span class="meta-key">Items Per Box</span><span>5–8 items</span></div>
-    <div class="meta-row"><span class="meta-key">Exclusive Items</span><span>${b.exclusive ? 'Yes' : 'Some'}</span></div>`;
+    <div class="meta-row"><span class="meta-key">Exclusive Items</span><span>${b.exclusive ? "Yes" : "Some"}</span></div>`;
+        nav("product");
+      }
 
-  nav('product');
-}
+      function selectPlan(el, planId) {
+        selectedPlanId = planId;
+        document
+          .querySelectorAll(".plan-opt")
+          .forEach((o) => o.classList.remove("selected"));
+        el.classList.add("selected");
+      }
 
-function selectPlan(el, planId) {
-  selectedPlanId = planId;
-  document.querySelectorAll('.plan-opt').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-}
+      function addToCartFromProduct() {
+        const b = BOXES.find((x) => x.id === selectedProductId);
+        const p = PLANS.find((x) => x.id === selectedPlanId);
+        if (!b || !p) return;
+        const price = parseFloat((b.price * p.mult).toFixed(2));
+        cart.push({ id: Date.now(), box: b, plan: p, price });
+        updateCartCount();
+        showToast(`${b.icon} ${b.name} added to cart!`);
+      }
 
-function addToCartFromProduct() {
-  const b = BOXES.find(x => x.id === selectedProductId);
-  const p = PLANS.find(x => x.id === selectedPlanId);
-  if (!b || !p) return;
-  const price = parseFloat((b.price * p.mult).toFixed(2));
-  cart.push({ id: Date.now(), box: b, plan: p, price });
-  updateCartCount();
-  // small confirm
-  showToast(`${b.icon} ${b.name} added to cart!`);
-}
+      function quickAdd(id) {
+        const b = BOXES.find((x) => x.id === id);
+        const p = PLANS[0];
+        cart.push({ id: Date.now(), box: b, plan: p, price: b.price });
+        updateCartCount();
+        showToast(`${b.icon} ${b.name} added!`);
+      }
 
-function quickAdd(id) {
-  const b = BOXES.find(x => x.id === id);
-  const p = PLANS[0]; // monthly default
-  cart.push({ id: Date.now(), box: b, plan: p, price: b.price });
-  updateCartCount();
-  showToast(`${b.icon} ${b.name} added!`);
-}
+      function updateCartCount() {
+        document.getElementById("cartCount").textContent = cart.length;
+        const m = document.getElementById("cartCountMobile");
+        if (m) m.textContent = cart.length;
+      }
 
-/* ═══ CART ════════════════════════════════════════════════════ */
-function updateCartCount() {
-  document.getElementById('cartCount').textContent = cart.length;
-  const m = document.getElementById('cartCountMobile');
-  if (m) m.textContent = cart.length;
-}
-
-function renderCart() {
-  const el = document.getElementById('cartContent');
-  if (cart.length === 0) {
-    el.innerHTML = `<div class="cart-empty">
+      function renderCart() {
+        const el = document.getElementById("cartContent");
+        if (cart.length === 0) {
+          el.innerHTML = `<div class="cart-empty">
       <div class="icon">📦</div>
       <p>Your cart is empty. Find your next obsession.</p>
       <button class="btn btn-primary btn-md" onclick="nav('shop')">Browse Boxes</button>
     </div>`;
-    return;
-  }
-
-  const total = cart.reduce((s, i) => s + i.price, 0);
-  const itemsHTML = cart.map(item => `
+          return;
+        }
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        const itemsHTML = cart
+          .map(
+            (item) => `
     <div class="cart-item">
       <div class="cart-item-icon">${item.box.icon}</div>
       <div class="cart-item-info">
@@ -1079,159 +3190,189 @@ function renderCart() {
       </div>
       <div class="cart-item-price">$${item.price.toFixed(2)}</div>
       <button class="cart-item-remove" onclick="removeFromCart(${item.id})">×</button>
-    </div>`).join('');
-
-  el.innerHTML = itemsHTML + `
+    </div>`,
+          )
+          .join("");
+        el.innerHTML =
+          itemsHTML +
+          `
     <div class="cart-summary">
-      <div class="summary-row"><span>Subtotal (${cart.length} item${cart.length>1?'s':''})</span><span>$${total.toFixed(2)}</span></div>
+      <div class="summary-row"><span>Subtotal (${cart.length} item${cart.length > 1 ? "s" : ""})</span><span>$${total.toFixed(2)}</span></div>
       <div class="summary-row"><span>Shipping</span><span style="color:var(--teal);">Calculated at checkout</span></div>
       <div class="summary-row"><span>Tax</span><span>Calculated at checkout</span></div>
       <div class="summary-row summary-total"><span>Estimated Total</span><span style="color:var(--gold);font-family:var(--font-m);">$${total.toFixed(2)}+</span></div>
       <button class="btn btn-primary btn-lg" style="width:100%;margin-top:16px;" onclick="nav('checkout')">Proceed to Checkout →</button>
     </div>`;
-}
+      }
 
-function removeFromCart(id) {
-  cart = cart.filter(i => i.id !== id);
-  updateCartCount();
-  renderCart();
-}
+      function removeFromCart(id) {
+        cart = cart.filter((i) => i.id !== id);
+        updateCartCount();
+        renderCart();
+      }
 
-/* ═══ CHECKOUT ════════════════════════════════════════════════ */
-function renderCheckout() {
-  checkoutStep = 1;
-  updateCheckoutProgress(1);
-  document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('cStep1').classList.add('active');
-  renderOrderSummary();
-}
+      function renderCheckout() {
+        checkoutStep = 1;
+        updateCheckoutProgress(1);
+        document
+          .querySelectorAll(".checkout-step")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById("cStep1").classList.add("active");
+        renderOrderSummary();
+      }
 
-function renderOrderSummary() {
-  const total = cart.reduce((s, i) => s + i.price, 0);
-  const items = cart.length ? cart.map(i => `
+      function renderOrderSummary() {
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        const items = cart.length
+          ? cart
+              .map(
+                (i) => `
     <div class="os-item">
       <div class="os-icon">${i.box.icon}</div>
       <div><div class="os-name">${i.box.name}</div><div class="os-plan">${i.plan.label}</div></div>
       <div class="os-price">$${i.price.toFixed(2)}</div>
-    </div>`).join('') :
-    `<div style="color:var(--muted);font-size:13px;">No items in cart.</div>`;
-
-  document.getElementById('osSummaryItems').innerHTML = items;
-  document.getElementById('osSummaryTotals').innerHTML = `
+    </div>`,
+              )
+              .join("")
+          : `<div style="color:var(--muted);font-size:13px;">No items in cart.</div>`;
+        document.getElementById("osSummaryItems").innerHTML = items;
+        document.getElementById("osSummaryTotals").innerHTML = `
     <hr class="div">
     <div class="os-row"><span>Subtotal</span><span>$${total.toFixed(2)}</span></div>
     <div class="os-row"><span>Shipping</span><span style="color:var(--teal);">TBD</span></div>
     <div class="os-row os-total"><span>Total</span><span style="color:var(--gold);font-family:var(--font-m);">$${total.toFixed(2)}+</span></div>`;
-}
+      }
 
-function updateCheckoutProgress(step) {
-  checkoutStep = step;
-  document.querySelectorAll('.cp-step').forEach(el => {
-    const s = parseInt(el.dataset.s);
-    el.classList.remove('active','done');
-    if (s < step) el.classList.add('done');
-    if (s === step) el.classList.add('active');
-  });
-  // update line fills
-  const lines = document.querySelectorAll('#checkoutProgress .cp-line');
-  lines.forEach((line, i) => {
-    line.style.background = (i < step - 1) ? 'var(--teal)' : 'var(--border)';
-  });
-}
+      function updateCheckoutProgress(step) {
+        checkoutStep = step;
+        document.querySelectorAll(".cp-step").forEach((el) => {
+          const s = parseInt(el.dataset.s);
+          el.classList.remove("active", "done");
+          if (s < step) el.classList.add("done");
+          if (s === step) el.classList.add("active");
+        });
+        const lines = document.querySelectorAll("#checkoutProgress .cp-line");
+        lines.forEach((line, i) => {
+          line.style.background =
+            i < step - 1 ? "var(--teal)" : "var(--border)";
+        });
+      }
 
-function checkoutNext(step) {
-  document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('cStep' + step).classList.add('active');
-  updateCheckoutProgress(step);
-
-  if (step === 2) {
-    // populate review
-    const name = (document.getElementById('f_first').value||'—') + ' ' + (document.getElementById('f_last').value||'—');
-    const addr = [
-      document.getElementById('f_addr').value||'—',
-      document.getElementById('f_city').value,
-      document.getElementById('f_prov').value,
-      document.getElementById('f_zip').value,
-      document.getElementById('f_country').value
-    ].filter(Boolean).join(', ');
-    document.getElementById('reviewShipping').innerHTML = `<strong style="color:var(--text);">${name}</strong><br>${document.getElementById('f_email').value||'—'}<br>${addr}`;
-
-    const items = cart.length ? cart.map(i =>
-      `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+      function checkoutNext(step) {
+        document
+          .querySelectorAll(".checkout-step")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById("cStep" + step).classList.add("active");
+        updateCheckoutProgress(step);
+        if (step === 2) {
+          const name =
+            (document.getElementById("f_first").value || "—") +
+            " " +
+            (document.getElementById("f_last").value || "—");
+          const addr = [
+            document.getElementById("f_addr").value || "—",
+            document.getElementById("f_city").value,
+            document.getElementById("f_prov").value,
+            document.getElementById("f_zip").value,
+            document.getElementById("f_country").value,
+          ]
+            .filter(Boolean)
+            .join(", ");
+          document.getElementById("reviewShipping").innerHTML =
+            `<strong style="color:var(--text);">${name}</strong><br>${document.getElementById("f_email").value || "—"}<br>${addr}`;
+          const items = cart.length
+            ? cart
+                .map(
+                  (i) =>
+                    `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
         <span style="font-size:22px;">${i.box.icon}</span>
         <span style="font-size:13px;flex:1;">${i.box.name} — ${i.plan.label}</span>
         <span style="font-family:var(--font-m);font-size:13px;color:var(--gold);">$${i.price.toFixed(2)}</span>
-       </div>`).join('') :
-      '<div style="color:var(--muted);font-size:13px;">No items.</div>';
-    document.getElementById('reviewItems').innerHTML = items;
-  }
-  window.scrollTo(0,0);
-}
+       </div>`,
+                )
+                .join("")
+            : '<div style="color:var(--muted);font-size:13px;">No items.</div>';
+          document.getElementById("reviewItems").innerHTML = items;
+        }
+        window.scrollTo(0, 0);
+      }
 
-function placeOrder() {
-  cart = [];
-  updateCartCount();
-  document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('cStepSuccess').classList.add('active');
-  document.getElementById('checkoutProgress').style.display = 'none';
-  document.getElementById('orderSummaryBox').style.display = 'none';
-}
+      function placeOrder() {
+        cart = [];
+        updateCartCount();
+        document
+          .querySelectorAll(".checkout-step")
+          .forEach((s) => s.classList.remove("active"));
+        document.getElementById("cStepSuccess").classList.add("active");
+        document.getElementById("checkoutProgress").style.display = "none";
+        document.getElementById("orderSummaryBox").style.display = "none";
+      }
 
-/* ═══ ACCOUNT TABS ════════════════════════════════════════════ */
-function acctTab(tab) {
-  ['subs','hist','prof','addr'].forEach(t => {
-    document.getElementById('acct-'+t).style.display = t===tab ? 'block' : 'none';
-    document.getElementById('acct-tab-'+t).classList.toggle('active', t===tab);
-  });
-}
+      function acctTab(tab) {
+        ["subs", "hist", "prof", "addr"].forEach((t) => {
+          document.getElementById("acct-" + t).style.display =
+            t === tab ? "block" : "none";
+          document
+            .getElementById("acct-tab-" + t)
+            .classList.toggle("active", t === tab);
+        });
+      }
 
-/* ═══ TOAST ═══════════════════════════════════════════════════ */
-function showToast(msg) {
-  const t = document.createElement('div');
-  t.textContent = msg;
-  Object.assign(t.style, {
-    position:'fixed', bottom:'24px', right:'24px', zIndex:'9999',
-    background:'var(--surf2)', border:'1px solid var(--gold)',
-    color:'var(--text)', borderRadius:'10px', padding:'12px 20px',
-    fontSize:'13px', fontFamily:'var(--font-b)',
-    boxShadow:'0 8px 30px rgba(0,0,0,.4)',
-    animation:'fadeUp .3s ease',
-  });
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2500);
-}
+      function showToast(msg) {
+        const t = document.createElement("div");
+        t.textContent = msg;
+        Object.assign(t.style, {
+          position: "fixed",
+          bottom: "24px",
+          right: "24px",
+          zIndex: "9999",
+          background: "var(--surf2)",
+          border: "1px solid var(--gold)",
+          color: "var(--text)",
+          borderRadius: "10px",
+          padding: "12px 20px",
+          fontSize: "13px",
+          fontFamily: "var(--font-b)",
+          boxShadow: "0 8px 30px rgba(0,0,0,.4)",
+          animation: "fadeUp .3s ease",
+        });
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+      }
 
-/* ═══ MOBILE MENU ════════════════════════════════════════════ */
-function toggleMobileMenu() {
-  const menu = document.getElementById('mobileMenu');
-  const btn = document.getElementById('hamburger');
-  const isOpen = menu.classList.toggle('open');
-  btn.classList.toggle('open', isOpen);
-}
+      function toggleMobileMenu() {
+        const menu = document.getElementById("mobileMenu");
+        const btn = document.getElementById("hamburger");
+        const isOpen = menu.classList.toggle("open");
+        btn.classList.toggle("open", isOpen);
+      }
 
-function navMobile(page) {
-  // close menu first
-  document.getElementById('mobileMenu').classList.remove('open');
-  document.getElementById('hamburger').classList.remove('open');
-  // update mobile active states
-  document.querySelectorAll('#mobileMenu .mobile-nav-link').forEach(l => {
-    l.classList.toggle('active', l.dataset.page === page);
-  });
-  nav(page);
-}
+      function navMobile(page) {
+        document.getElementById("mobileMenu").classList.remove("open");
+        document.getElementById("hamburger").classList.remove("open");
+        document
+          .querySelectorAll("#mobileMenu .mobile-nav-link")
+          .forEach((l) => {
+            l.classList.toggle("active", l.dataset.page === page);
+          });
+        nav(page);
+      }
 
-// close mobile menu on outside click
-document.addEventListener('click', e => {
-  const menu = document.getElementById('mobileMenu');
-  const btn = document.getElementById('hamburger');
-  if (menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
-    menu.classList.remove('open');
-    btn.classList.remove('open');
-  }
-});
+      document.addEventListener("click", (e) => {
+        const menu = document.getElementById("mobileMenu");
+        const btn = document.getElementById("hamburger");
+        if (
+          menu.classList.contains("open") &&
+          !menu.contains(e.target) &&
+          !btn.contains(e.target)
+        ) {
+          menu.classList.remove("open");
+          btn.classList.remove("open");
+        }
+      });
 
-/* ═══ INIT ════════════════════════════════════════════════════ */
-nav('home');
-</script>
-</body>
+      nav("home");
+      updateAuthUI();
+    </script>
+  </body>
 </html>
