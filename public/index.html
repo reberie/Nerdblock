@@ -962,19 +962,20 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey: "AIzaSyACmcGWus6bKnJDynpTb4F5SwyrYmtbr8U",
+  authDomain: "nerdblock-268a3.firebaseapp.com",
+  projectId: "nerdblock-268a3",
+  storageBucket: "nerdblock-268a3.firebasestorage.app",
+  messagingSenderId: "425893301655",
+  appId: "1:425893301655:web:bcf0ddc1f80bf338ae48d2",
+  measurementId: "G-82MD0RLBFS"
 };
 
 // ── API base — auto-detects emulator vs production ─────────────
 const IS_LOCAL = location.hostname === "localhost" || location.hostname === "127.0.0.1";
 const API_BASE = IS_LOCAL
-  ? "http://localhost:5001/YOUR_PROJECT_ID/us-central1/api"
-  : "https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net/api";
+  ? "http://localhost:5001/nerdblock-268a3/us-central1/api"
+  : "https://us-central1-nerdblock-268a3.cloudfunctions.net/api";
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);

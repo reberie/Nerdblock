@@ -7,7 +7,7 @@
 #     firebase.auth().currentUser.getIdToken().then(t => console.log(t)) )
 # 3. Paste that token below and send requests.
 
-@projectId = YOUR_PROJECT_ID
+@projectId = nerdblock-268a3
 @base = http://localhost:5001/{{projectId}}/us-central1/api
 @token = PASTE_ID_TOKEN_HERE
 

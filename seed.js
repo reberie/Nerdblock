@@ -4,13 +4,13 @@
  * Or against production: GOOGLE_APPLICATION_CREDENTIALS=./serviceAccount.json node seed.js
  */
 
-const admin = require("firebase-admin");
+const admin = require("./functions/node_modules/firebase-admin");
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 const useEmulator = process.env.FIRESTORE_EMULATOR_HOST || !process.env.GOOGLE_APPLICATION_CREDENTIALS;
 if (useEmulator) {
   process.env.FIRESTORE_EMULATOR_HOST = process.env.FIRESTORE_EMULATOR_HOST || "localhost:8080";
-  admin.initializeApp({ projectId: "nerdblock-dev" });
+  admin.initializeApp({ projectId: "nerdblock-268a3" });
   console.log("🔧 Using Firestore emulator at", process.env.FIRESTORE_EMULATOR_HOST);
 } else {
   const serviceAccount = require("./serviceAccount.json");
