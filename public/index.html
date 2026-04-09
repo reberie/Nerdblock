@@ -917,22 +917,42 @@ footer .ft-links a:hover { color:var(--text); }
         <div id="acct-prof" style="display:none;">
           <div style="font-weight:700;margin-bottom:16px;">Profile Information</div>
           <div class="checkout-panel">
-            <div class="field-row"><div class="field"><label>First Name</label><input value="Jane"></div><div class="field"><label>Last Name</label><input value="Doe"></div></div>
-            <div class="field"><label>Email</label><input value="jane.doe@email.com" type="email"></div>
-            <div class="field"><label>Phone</label><input value="+1 416 555 0192" type="tel"></div>
+            <div class="field-row"><div class="field"><label>First Name</label><input id="profFirst" value=""></div><div class="field"><label>Last Name</label><input id="profLast" value=""></div></div>
+            <div class="field"><label>Email</label><input id="profEmail" value="" type="email" disabled style="opacity:.6;"></div>
+            <div class="field"><label>Phone</label><input id="profPhone" value="" type="tel" placeholder="+1 555 000 0000"></div>
             <hr class="div">
-            <div class="field-row"><div class="field"><label>Shirt Size</label><select><option>XS</option><option>S</option><option>M</option><option selected>L</option><option>XL</option></select></div><div class="field"><label>Content Rating</label><select><option selected>All Ages</option><option>13+</option><option>18+</option></select></div></div>
+            <div class="field-row"><div class="field"><label>Shirt Size</label><select id="profSize"><option value="">—</option><option value="XS">XS</option><option value="S">S</option><option value="M">M</option><option value="L">L</option><option value="XL">XL</option></select></div><div class="field"><label>Content Rating</label><select id="profRating"><option value="ALL">All Ages</option><option value="13+">13+</option><option value="18+">18+</option></select></div></div>
             <div style="display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:8px;">
-              <button class="btn btn-primary btn-sm">Save Changes</button>
-              <button class="btn btn-ghost btn-sm" style="color:var(--red);">Delete Account</button>
+              <button class="btn btn-primary btn-sm" onclick="saveProfile()">Save Changes</button>
+              <button class="btn btn-ghost btn-sm" style="color:var(--red);" onclick="deleteAccount()">Delete Account</button>
             </div>
           </div>
         </div>
         <div id="acct-addr" style="display:none;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-weight:700;">Saved Addresses</div><button class="btn btn-outline btn-sm">+ Add Address</button></div>
-          <div class="checkout-panel">
-            <div style="font-size:13px;line-height:1.8;">123 Maple St<br>Toronto, ON M4B 1T7<br>Canada</div>
-            <div style="display:flex;gap:8px;margin-top:10px;"><span class="badge badge-green">Default Shipping</span><button class="btn btn-ghost btn-sm">Edit</button><button class="btn btn-ghost btn-sm" style="color:var(--red);">Remove</button></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-weight:700;">Saved Addresses</div><button class="btn btn-outline btn-sm" onclick="showAddressForm()">+ Add Address</button></div>
+          <div id="addrList"><div style="color:var(--muted);font-size:13px;">Loading...</div></div>
+          <div id="addrFormWrap" style="display:none;margin-top:16px;">
+            <div class="checkout-panel">
+              <div style="font-weight:700;margin-bottom:12px;" id="addrFormTitle">Add Address</div>
+              <input type="hidden" id="addrEditId" value="">
+              <div class="field"><label>Label</label><input id="addrLabel" placeholder="Home, Work, etc."></div>
+              <div class="field"><label>Street</label><input id="addrStreet" placeholder="123 Main St"></div>
+              <div class="field-row">
+                <div class="field"><label>City</label><input id="addrCity" placeholder="Toronto"></div>
+                <div class="field"><label>Province/State</label><input id="addrProvince" placeholder="ON"></div>
+              </div>
+              <div class="field-row">
+                <div class="field"><label>Postal/ZIP Code</label><input id="addrPostal" placeholder="M4B 1T7"></div>
+                <div class="field"><label>Country</label><input id="addrCountry" placeholder="Canada" value="Canada"></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;margin:8px 0;">
+                <input type="checkbox" id="addrDefault"> <label for="addrDefault" style="font-size:13px;">Set as default shipping address</label>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <button class="btn btn-primary btn-sm" onclick="submitAddress()">Save Address</button>
+                <button class="btn btn-ghost btn-sm" onclick="hideAddressForm()">Cancel</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1573,6 +1593,7 @@ window.acctTab = function(tab) {
     document.getElementById('acct-tab-'+t).classList.toggle('active', t===tab);
   });
   if (tab === 'hist') loadOrderHistory();
+  if (tab === 'prof' || tab === 'addr') loadProfileData();
 };
 
 async function loadAccountData() {
@@ -1655,6 +1676,158 @@ window.pauseSub = async function(subId) {
     await apiCall('PATCH', `/subscriptions/${subId}/pause`);
     showToast('Subscription paused.');
     loadAccountData();
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+};
+
+/* ════════════════════════════════════════════════════════════════
+   PROFILE & ADDRESSES
+════════════════════════════════════════════════════════════════ */
+let myProfile = null;
+
+async function loadProfileData() {
+  if (!currentUser) return;
+  try {
+    myProfile = await apiCall('GET', '/customers/me');
+    document.getElementById('profFirst').value = myProfile.first_name || '';
+    document.getElementById('profLast').value  = myProfile.last_name || '';
+    document.getElementById('profEmail').value = myProfile.email || currentUser.email || '';
+    document.getElementById('profPhone').value = myProfile.phone_number || '';
+    document.getElementById('profSize').value  = myProfile.clothing_size || '';
+    document.getElementById('profRating').value = myProfile.age_rating_pref || 'ALL';
+    renderAddresses(myProfile.addresses || []);
+  } catch {
+    document.getElementById('profFirst').value = '';
+    document.getElementById('profLast').value  = '';
+    document.getElementById('profEmail').value = currentUser.email || '';
+  }
+}
+
+window.saveProfile = async function() {
+  const first = document.getElementById('profFirst').value.trim();
+  const last  = document.getElementById('profLast').value.trim();
+  if (!first || !last) { showToast('First and last name are required.'); return; }
+  try {
+    await apiCall('PUT', '/customers/me', {
+      first_name:      first,
+      last_name:       last,
+      phone_number:    document.getElementById('profPhone').value.trim() || null,
+      clothing_size:   document.getElementById('profSize').value || null,
+      age_rating_pref: document.getElementById('profRating').value,
+    });
+    showToast('Profile saved!');
+    updateNavUser(currentUser);
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+};
+
+window.deleteAccount = async function() {
+  if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
+  if (!confirm('This will permanently remove your profile and all saved addresses. Continue?')) return;
+  try {
+    await apiCall('DELETE', '/customers/me');
+    await signOut(auth);
+    showToast('Account deleted.');
+    nav('home');
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+};
+
+function renderAddresses(addresses) {
+  const el = document.getElementById('addrList');
+  if (!addresses || addresses.length === 0) {
+    el.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:12px 0;">No saved addresses. Click "+ Add Address" to add one.</div>`;
+    return;
+  }
+  el.innerHTML = addresses.map(a => `
+    <div class="checkout-panel" style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div style="font-weight:600;font-size:13px;margin-bottom:4px;">${a.label || 'Address'}</div>
+          <div style="font-size:13px;line-height:1.8;color:var(--muted);">${a.street}<br>${a.city}, ${a.province} ${a.postal_code}<br>${a.country}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+        ${a.is_default ? '<span class="badge badge-green">Default Shipping</span>' : `<button class="btn btn-ghost btn-sm" onclick="setDefaultAddr('${a.id}')">Set Default</button>`}
+        <button class="btn btn-ghost btn-sm" onclick="editAddress('${a.id}')">Edit</button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--red);" onclick="removeAddress('${a.id}')">Remove</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.showAddressForm = function(addr) {
+  document.getElementById('addrFormWrap').style.display = 'block';
+  document.getElementById('addrFormTitle').textContent = addr ? 'Edit Address' : 'Add Address';
+  document.getElementById('addrEditId').value  = addr ? addr.id : '';
+  document.getElementById('addrLabel').value   = addr ? (addr.label || '') : '';
+  document.getElementById('addrStreet').value  = addr ? (addr.street || '') : '';
+  document.getElementById('addrCity').value    = addr ? (addr.city || '') : '';
+  document.getElementById('addrProvince').value = addr ? (addr.province || '') : '';
+  document.getElementById('addrPostal').value  = addr ? (addr.postal_code || '') : '';
+  document.getElementById('addrCountry').value = addr ? (addr.country || '') : 'Canada';
+  document.getElementById('addrDefault').checked = addr ? !!addr.is_default : false;
+};
+
+window.hideAddressForm = function() {
+  document.getElementById('addrFormWrap').style.display = 'none';
+};
+
+window.editAddress = function(addrId) {
+  if (!myProfile) return;
+  const addr = (myProfile.addresses || []).find(a => a.id === addrId);
+  if (addr) showAddressForm(addr);
+};
+
+window.submitAddress = async function() {
+  const street  = document.getElementById('addrStreet').value.trim();
+  const city    = document.getElementById('addrCity').value.trim();
+  const prov    = document.getElementById('addrProvince').value.trim();
+  const postal  = document.getElementById('addrPostal').value.trim();
+  const country = document.getElementById('addrCountry').value.trim();
+  if (!street || !city || !prov || !postal || !country) {
+    showToast('Please fill in all address fields.'); return;
+  }
+  const body = {
+    label:       document.getElementById('addrLabel').value.trim() || 'Home',
+    street, city, province: prov, postal_code: postal, country,
+    is_default:  document.getElementById('addrDefault').checked,
+  };
+  const editId = document.getElementById('addrEditId').value;
+  try {
+    if (editId) {
+      await apiCall('PUT', `/customers/me/addresses/${editId}`, body);
+      showToast('Address updated!');
+    } else {
+      await apiCall('POST', '/customers/me/addresses', body);
+      showToast('Address added!');
+    }
+    hideAddressForm();
+    await loadProfileData();
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+};
+
+window.removeAddress = async function(addrId) {
+  if (!confirm('Remove this address?')) return;
+  try {
+    await apiCall('DELETE', `/customers/me/addresses/${addrId}`);
+    showToast('Address removed.');
+    await loadProfileData();
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+};
+
+window.setDefaultAddr = async function(addrId) {
+  try {
+    await apiCall('PUT', `/customers/me/addresses/${addrId}`, { is_default: true });
+    showToast('Default address updated.');
+    await loadProfileData();
   } catch (err) {
     showToast(`Error: ${err.message}`);
   }
