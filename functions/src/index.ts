@@ -1,5 +1,6 @@
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import { onRequest } from "firebase-functions/v2/https";
+import { onDocumentUpdated } from "firebase-functions/v2/firestore";
 import express from "express";
 import cors from "cors";
 
@@ -54,25 +55,27 @@ app.get("/", (_req, res) => {
 app.use((_req, res) => res.status(404).json({ error: "Endpoint not found" }));
 
 // ── Export as Cloud Function ─────────────────────────────────────────────────
-export const api = functions
-  .runWith({ memory: "512MB", timeoutSeconds: 60 })
-  .https.onRequest(app);
+export const api = onRequest(
+  { memory: "512MiB", timeoutSeconds: 60 },
+  app
+);
 
 // ── Firestore triggers ───────────────────────────────────────────────────────
 
 /** Auto-log subscription status changes */
-export const onSubscriptionUpdate = functions.firestore
-  .document("subscriptions/{subId}")
-  .onUpdate(async (change, context) => {
-    const before = change.before.data();
-    const after = change.after.data();
+export const onSubscriptionUpdate = onDocumentUpdated(
+  "subscriptions/{subId}",
+  async (event) => {
+    if (!event.data) return;
+    const before = event.data.before.data();
+    const after = event.data.after.data();
     if (
       before.auto_renew !== after.auto_renew ||
       before.renewal_date !== after.renewal_date
     ) {
       await db.collection("audit_logs").add({
         entity_name: "subscription",
-        entity_id: context.params.subId,
+        entity_id: event.params.subId,
         action_type: "UPDATE",
         old_value: JSON.stringify({
           auto_renew: before.auto_renew,
@@ -85,31 +88,35 @@ export const onSubscriptionUpdate = functions.firestore
         created_at: admin.firestore.FieldValue.serverTimestamp(),
       });
     }
-  });
+  }
+);
 
 /** Auto-log order status changes */
-export const onOrderUpdate = functions.firestore
-  .document("orders/{orderId}")
-  .onUpdate(async (change, context) => {
-    const before = change.before.data();
-    const after = change.after.data();
+export const onOrderUpdate = onDocumentUpdated(
+  "orders/{orderId}",
+  async (event) => {
+    if (!event.data) return;
+    const before = event.data.before.data();
+    const after = event.data.after.data();
     if (before.order_status !== after.order_status) {
       await db.collection("audit_logs").add({
         entity_name: "order",
-        entity_id: context.params.orderId,
+        entity_id: event.params.orderId,
         action_type: "UPDATE",
         old_value: `status: ${before.order_status}`,
         new_value: `status: ${after.order_status}`,
         created_at: admin.firestore.FieldValue.serverTimestamp(),
       });
     }
-  });
+  }
+);
 
 /** Sync shipment → order status automatically */
-export const onShipmentUpdate = functions.firestore
-  .document("shipments/{shipId}")
-  .onUpdate(async (change) => {
-    const after = change.after.data();
+export const onShipmentUpdate = onDocumentUpdated(
+  "shipments/{shipId}",
+  async (event) => {
+    if (!event.data) return;
+    const after = event.data.after.data();
     if (!after.order_id) return;
     const statusMap: Record<string, string> = {
       Shipped: "Shipped",
@@ -123,4 +130,5 @@ export const onShipmentUpdate = functions.firestore
         updated_at: admin.firestore.FieldValue.serverTimestamp(),
       });
     }
-  });
+  }
+);

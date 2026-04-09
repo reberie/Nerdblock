@@ -6,7 +6,6 @@
 <title>NerdBlock</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-<style>
 /* ─── RESET & TOKENS ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -465,7 +464,6 @@ footer .ft-logo { font-family:var(--font-d); font-size:24px; color:var(--gold); 
 footer .ft-links { display:flex; gap:20px; justify-content:center; margin-bottom:12px; }
 footer .ft-links a { color:var(--muted); transition:color .2s; cursor:pointer; }
 footer .ft-links a:hover { color:var(--text); }
-</style>
 
 /* ─── AUTH OVERLAY ──────────────────────────────────────────── */
 #authOverlay {
@@ -953,11 +951,11 @@ footer .ft-links a:hover { color:var(--text); }
 ════════════════════════════════════════════════════════════════ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+  getAuth, connectAuthEmulator, onAuthStateChanged, signInWithEmailAndPassword,
   createUserWithEmailAndPassword, signOut, sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-  getFirestore, collection, getDocs, addDoc, doc, getDoc,
+  getFirestore, connectFirestoreEmulator, collection, getDocs, addDoc, doc, getDoc,
   query, where, orderBy, limit, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -980,6 +978,12 @@ const API_BASE = IS_LOCAL
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
+
+// ── Connect to emulators when running locally ────────────────
+if (IS_LOCAL) {
+  connectAuthEmulator(auth, "http://localhost:9099");
+  connectFirestoreEmulator(db, "localhost", 8080);
+}
 
 /* ════════════════════════════════════════════════════════════════
    AUTH STATE
